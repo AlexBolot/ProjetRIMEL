@@ -1,3 +1,3 @@
 # FinderJS
 
-node findJS.js {Path}
+node findJS.js {Path} {fileNameWanted}
