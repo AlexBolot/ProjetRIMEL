@@ -1,0 +1,24 @@
+{
+  "name": "finderjs",
+  "version": "1.0.0",
+  "description": "node findJS.js {Path} {fileNameWanted}",
+  "main": "index.js",
+  "dependencies": {
+    "dockerfile-ast": "^0.0.18"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node src/findJS.js",
+    "test":  "node src/findJS.js ../minio Dockerfile"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexBolot/ProjetRIMEL.git"
+  },
+  "author": "Theos",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexBolot/ProjetRIMEL/issues"
+  },
+  "homepage": "https://github.com/AlexBolot/ProjetRIMEL#readme"
+}
