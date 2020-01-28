@@ -13,8 +13,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "test": "ts-node src/index.ts ../minio Dockerfile"
+    "start": "ts-node src/metrics/index.ts",
+    "test": "ts-node src/metrics/index.ts ../minio Dockerfile"
   },
   "repository": {
     "type": "git",
