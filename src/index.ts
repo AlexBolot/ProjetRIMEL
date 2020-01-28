@@ -1,4 +1,5 @@
-import * as filter from './filterFiles'
+import * as filter from './filterFiles';
+import * as astExp from './astExplorer';
 
 const folderPath = process.argv[2];
 const fileNameWanted = process.argv[3];
@@ -15,7 +16,14 @@ let nameFilter = fileName => {
   return fileName === (fileNameWanted);
 }
 
-// START ----
-filter.filterFile(folderPath,nameFilter);
+const files = { paths : [] };
 
+// START ----
+filter.filterFile(folderPath,nameFilter,files);
+
+for(var file in files.paths){
+  console.log(files.paths[file]);
+  let explorer = new astExp.AstExplorer(file);
+  explorer.explore();
+}
 

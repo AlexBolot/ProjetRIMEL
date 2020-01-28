@@ -11,8 +11,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "ts-node src/findJS.ts",
-    "test": "ts-node src/findJS.ts ../minio Dockerfile"
+    "start": "ts-node src/index.ts",
+    "test": "ts-node src/index.ts ../minio Dockerfile"
   },
   "repository": {
     "type": "git",
