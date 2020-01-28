@@ -1,7 +1,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const parser = require('./dockerfileParser');
 import * as astExp from './astExplorer';
 
 //filter ---- 
@@ -12,7 +11,7 @@ const isFolder = fileName => {
     return fs.lstatSync(fileName).isDirectory();
 }
   
-function filterFile(folder,nameFilter){
+export function filterFile(folder,nameFilter){
   
     //get interesting file
     var files = fs.readdirSync(folder)
@@ -37,4 +36,3 @@ function filterFile(folder,nameFilter){
       filterFile(f,nameFilter);
     }
   }
-  module.exports.filterFile = filterFile;
