@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const parser = require('./dockerfileParser');
+import * as astExp from './astExplorer';
 
 //filter ---- 
 const isFile = fileName => {
@@ -20,8 +21,10 @@ function filterFile(folder,nameFilter){
         return path.join(folder, fileName)
     }).filter(isFile);
   
-    if(files.length>0)
-      parser.parsingDockerfile(files);
+    if(files.length>0){
+      let explorer = new astExp.AstExplorer(files);
+      explorer.explore()
+    }
     
     // recurce on folder  
     var foldersList = fs.readdirSync(folder).map(fileName => {
