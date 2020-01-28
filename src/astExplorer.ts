@@ -45,15 +45,20 @@ export class AstExplorer {
         for (let curstage = 0; curstage < this.stageCount; ++curstage) {
             console.log(curstage);
             let stage = this.exploreStage(this.stages[curstage]);
-            switch (curstage) {
-                case 0:
-                    res.buildMetrics = stage;
-                    break;
-
-                case 1:
-                    res.runMetrics = stage;
-                    break;
+            if (this.stageCount == 2){
+                switch (curstage) {
+                    case 0:
+                        res.buildMetrics = stage;
+                        break;
+    
+                    case 1:
+                        res.runMetrics = stage;
+                        break;
+                }
+            }else {
+                res.runMetrics = stage;
             }
+            
         }
         return res;
     }
