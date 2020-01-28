@@ -43,7 +43,6 @@ export class AstExplorer {
     explore(): DockerFileMetrics {
         let res = new DockerFileMetrics();
         for (let curstage = 0; curstage < this.stageCount; ++curstage) {
-            console.log(curstage);
             let stage = this.exploreStage(this.stages[curstage]);
             if (this.stageCount == 2){
                 switch (curstage) {
@@ -57,6 +56,7 @@ export class AstExplorer {
                 }
             }else {
                 res.runMetrics = stage;
+                res.buildMetrics = null;
             }
             
         }
