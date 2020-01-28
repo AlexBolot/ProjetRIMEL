@@ -76,7 +76,7 @@ export class AstExplorer {
                 case "ENV":
                     this.exploreENV(i.getArgumentsContent()).forEach(e => res.EnvVariables.add(e));
                     break;
-                case "ARGS":
+                case "ARG":
                     res.Args++;
                     break;
 
