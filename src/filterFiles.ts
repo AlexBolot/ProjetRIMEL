@@ -21,8 +21,9 @@ export function filterFile(folder,nameFilter){
     }).filter(isFile);
   
     if(files.length>0){
-      let explorer = new astExp.AstExplorer(files);
-      explorer.explore()
+      let explorer = new astExp.AstExplorer(files[0]);
+      // TODO store into a file
+      console.log(explorer.explore());
     }
     
     // recurce on folder  
