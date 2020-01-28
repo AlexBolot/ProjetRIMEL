@@ -1,6 +1,6 @@
 import * as filter from './filterFiles';
 import * as yamlExplorer from './yamlExplorer';
-import * as astExp from './astExplorer';
+import * as astExp from './DockerFileAstExplorer';
 
 const folderPath = process.argv[2];
 const fileNameWanted = process.argv[3];
