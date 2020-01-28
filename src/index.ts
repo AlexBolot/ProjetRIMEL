@@ -1,4 +1,5 @@
 import * as filter from './filterFiles';
+import * as yamlExplorer from './yamlExplorer';
 import * as astExp from './astExplorer';
 
 const folderPath = process.argv[2];
@@ -22,8 +23,10 @@ const files = { paths : [] };
 filter.filterFile(folderPath,nameFilter,files);
 
 for(var file in files.paths){
-  console.log(files.paths[file]);
-  let explorer = new astExp.AstExplorer(file);
-  explorer.explore();
+  let path = files.paths[file];
+  console.log(path);
+  //console.log(yamlExplorer.parseYaml(files.paths[file]));
+  let explorer = new astExp.AstExplorer(path);
+  console.log(explorer.explore());
 }
 

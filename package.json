@@ -6,6 +6,7 @@
   "dependencies": {
     "@types/node": "^13.5.0",
     "dockerfile-ast": "^0.0.18",
+    "js-yaml": "^3.13.1",
     "ts-node": "^8.6.2",
     "typescript": "^3.7.5"
   },
