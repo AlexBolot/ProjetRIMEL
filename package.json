@@ -6,6 +6,8 @@
   "dependencies": {
     "@types/node": "^13.5.0",
     "dockerfile-ast": "^0.0.18",
+    "fs-extra": "^8.1.0",
+    "js-yaml": "^3.13.1",
     "node-fetch": "^2.6.0",
     "ts-node": "^8.6.2",
     "typescript": "^3.7.5"
@@ -15,8 +17,8 @@
     "sync-request": "^6.1.0"
   },
   "scripts": {
-    "start": "ts-node src/findJS.ts",
-    "test": "ts-node src/findJS.ts ../minio Dockerfile"
+    "start": "ts-node src/metrics/index.ts",
+    "test": "ts-node src/metrics/index.ts ../minio Dockerfile"
   },
   "repository": {
     "type": "git",
