@@ -1,37 +1,40 @@
+import { readdirSync, lstatSync } from "fs";
+import { join } from "path";
 
-const fs = require('fs');
-const path = require('path');
 
 //filter ---- 
 const isFile = fileName => {
-    return fs.lstatSync(fileName).isFile();
+    return lstatSync(fileName).isFile();
 }
 const isFolder = fileName => {
-    return fs.lstatSync(fileName).isDirectory();
+    return lstatSync(fileName).isDirectory();
 }
   
-export function filterFile(folder,nameFilter,files){
+export function filterFile(folder: string,nameFilter: string,files?: string[]|undefined): string[]{
   
+    if (files == undefined || files == null) {
+      files = new Array<string>();
+    }
+
+    let nodes = readdirSync(folder).filter(f => !f.startsWith("."));
+
     //get interesting file
-    var f = fs.readdirSync(folder)
-      .filter(nameFilter)
+    let f_nodes = nodes
+      .filter(f => f.toUpperCase() == nameFilter.toUpperCase())
       .map(fileName => { 
-        return path.join(folder, fileName)
+        return join(folder, fileName)
     }).filter(isFile);
     
     
-    if(f.length>0){
-      files.paths = files.paths.concat(f);
+    if(f_nodes.length>0){
+      files = files.concat(f_nodes);
     }
 
     // recurce on folder  
-    var foldersList = fs.readdirSync(folder).map(fileName => {
-      return path.join(folder, fileName);
-    }).filter(isFolder)
+    nodes.map(fileName => {
+      return join(folder, fileName);
+    }).filter(isFolder).forEach(d => filterFile(join(d), nameFilter, files));
     
-    for(var indice in foldersList){
-      var f = foldersList[indice]
-      filterFile(f,nameFilter,files);
-    }
+    return files;
   
   }

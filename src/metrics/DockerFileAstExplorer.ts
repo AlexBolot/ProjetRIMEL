@@ -76,7 +76,7 @@ export class AstExplorer {
                 case "ENV":
                     this.exploreENV(i.getArgumentsContent()).forEach(e => res.EnvVariables.add(e));
                     break;
-                case "ARGS":
+                case "ARG":
                     res.Args++;
                     break;
 
@@ -103,7 +103,6 @@ export class AstExplorer {
         }else {
             res.push(cmd.split(" ")[0]);
         }
-        
         return res.filter(e => e.length > 0);
     }
 
@@ -126,6 +125,18 @@ export class DockerFileMetrics {
         return JSON.stringify(this);
     }
 
+    toPrintableJson(): any {
+        const build = this.buildMetrics.toPrintableJson();
+        const run = this.buildMetrics.toPrintableJson()
+        const res = {
+            buildMetrics: build,
+            runMetrics: run
+        };
+
+        return res
+
+    }
+
 }
 
 export class metrics {
@@ -145,8 +156,16 @@ export class metrics {
         this.SecurityVariable = new Set();
     }
 
-    toSting() {
-        JSON.stringify(this);
+    toPrintableJson() {
+        const res = {};
+        res["expose"]=this.expose;
+        res["args"]=this.Args;
+        res["volumes"]=this.volumes;
+        res["EnvVariable"]=Array.from(this.EnvVariables);
+        res["unknown"]=Array.from(this.unknown);
+        res["SecurityVariable"]=Array.from(this.SecurityVariable);
+
+        return res;
     }
 }
 

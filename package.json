@@ -17,7 +17,7 @@
     "sync-request": "^6.1.0"
   },
   "scripts": {
-    "start": "ts-node src/metrics/index.ts",
+    "start": "ts-node src/index.ts",
     "test": "ts-node src/metrics/index.ts ../minio Dockerfile"
   },
   "repository": {
