@@ -11,12 +11,15 @@ export class AstExplorer {
 
     metrics: DockerFileMetrics;
 
-    constructor(file: string) {
+    securityparts: string[];
+
+    constructor(file: string, securityparts: string[]) {
         this.stages = new Array();
         this.currentStage = 0;
         this.metrics = new DockerFileMetrics();
         this.dockerfile = DockerfileParser.parse(fs.readFileSync(file).toString());
         this.stageCount = this.check();
+        this.securityparts = securityparts;
     }
 
     check(): number {
@@ -92,7 +95,15 @@ export class AstExplorer {
             }
         });
 
-        //TODO security variables
+        //security variables
+        Array.from(res.EnvVariables).filter(v => {
+            let predicate = false;
+            this.securityparts.forEach(p => {
+                if (v.toUpperCase().includes(p.toUpperCase())) predicate = true;
+            });
+            return predicate;
+        }).forEach(v => res.SecurityVariable.add(v));
+
         return res;
     }
 
@@ -127,7 +138,7 @@ export class DockerFileMetrics {
 
     toPrintableJson(): any {
         const build = this.buildMetrics.toPrintableJson();
-        const run = this.buildMetrics.toPrintableJson()
+        const run = this.runMetrics.toPrintableJson()
         const res = {
             buildMetrics: build,
             runMetrics: run

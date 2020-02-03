@@ -15,10 +15,13 @@ https://github.com/gittea/gittea
 */
 
 const listfile = process.argv[2];
-if (! listfile) {
+const securityparts = process.argv[3];
+if (! listfile || ! securityparts) {
     console.error("file needed")
     process.exit(2);
 }
+
+
 const lang = parseList(listfile);
-crawlLang(lang.lang, lang.urls);
+crawlLang(lang.lang, lang.urls, securityparts);
 
