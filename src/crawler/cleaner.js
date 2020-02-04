@@ -1,12 +1,15 @@
 const path = require('path');
-const neek  = require('neek');
+const neek = require('neek');
 const beep = require('beepbeep');
 // --------------------------------------------------------------------------- //
 
-const readable = path.join(__dirname, 'java-output-tmp.txt');
-const writable = path.join(__dirname, 'java-output.txt');
+// 'java', 'C#', 'go'
+const language = 'java';
 
-neek.unique(readable, writable, function(result){
+const readable = path.join(__dirname, '..', 'generated', `${language}-output-tmp.txt`);
+const writable = path.join(__dirname, '..', 'generated', `${language}-output.txt`);
+
+neek.unique(readable, writable, function (result) {
     console.log(result);
     beep(2);
 });

@@ -7,10 +7,19 @@ const clientSecret = require('./clientSecret');
 
 // --------------------------------------------------------------------------- //
 
+
 let items;
 
+// languages : java, C%23 (C#),
+
+const languages = {
+    'java': 'java',
+    'C#': 'C%23',
+    'go': 'go'
+};
+
 const language = 'java';
-const fileName = path.join(__dirname, `${language}-output-tmp.txt`);
+const fileName = path.join(__dirname, '..', 'generated', `${language}-output-tmp.txt`);
 
 main();
 
@@ -18,7 +27,7 @@ async function main() {
 
     fs.writeFileSync(fileName, `${language}\n`);
 
-    let url = `https://api.github.com/search/repositories?q=docker+language:${language}&sort=stars&order=desc&per_page=100`;
+    let url = `https://api.github.com/search/repositories?q=docker+language:${languages[language]}&sort=stars&order=desc&per_page=100`;
 
     for (let i = 1; i < 10; i++) {
         await processPage(`${url}&page=${i}&client_id=AlexBolot&client_secret=${clientSecret.secret}`);

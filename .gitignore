@@ -1,4 +1,4 @@
 /node_modules
 .idea
 src/crawler/clientSecret.js
-src/crawler/java-output-tmp.txt
+src/generated/*-output-tmp.txt
