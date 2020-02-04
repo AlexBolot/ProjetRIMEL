@@ -1,8 +1,8 @@
 import { readFileSync, existsSync, mkdirSync } from "fs-extra";
 import { EOL } from "os";
 import { cloneSync } from "./Git";
-import { filterFile } from "./metrics/filterFiles";
-import { AstExplorer } from "./metrics/DockerFileAstExplorer";
+import { filterFile } from "../metrics/filterFiles";
+import { AstExplorer } from "../metrics/DockerFileAstExplorer";
 import { writeFileSync } from "fs";
 import { join } from "path";
 
@@ -56,6 +56,8 @@ export function crawlRepo(url: string, baseDir: string, securityParts: string[])
     // DockerFile
     const dockerfileExplorer = new AstExplorer(filterFile(workspace+name, "DOCKERFILE")[0], securityParts);
     const docker_metrics = dockerfileExplorer.explore();
+    // docker-compose 
+    console.log(filterFile(workspace+name,"docker-compose"));
 
     //TODO agregate
 

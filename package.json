@@ -17,8 +17,9 @@
     "sync-request": "^6.1.0"
   },
   "scripts": {
-    
-    "start": "node src/crawler.js",
+    "start": "ts-node src/index.ts",
+    "startPath": "ts-node src/indexPath.ts",
+    "crawl": "node src/crawl/crawler.js",
     "clone": "ts-node src/"
   },
   "repository": {

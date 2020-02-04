@@ -1,7 +1,7 @@
 import * as filter from './metrics/filterFiles';
 import * as yamlExplorer from './metrics/yamlExplorer';
 import * as astExp from './metrics/DockerFileAstExplorer';
-import { crawlLang, parseList } from './CrawlRepo';
+import { crawlLang, parseList } from './crawler/CrawlRepo';
 
 /*
 take file list of repo
@@ -20,7 +20,6 @@ if (! listfile || ! securityparts) {
     console.error("file needed")
     process.exit(2);
 }
-
 
 const lang = parseList(listfile);
 crawlLang(lang.lang, lang.urls, securityparts);
