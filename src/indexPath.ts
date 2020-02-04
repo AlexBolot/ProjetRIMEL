@@ -17,7 +17,5 @@ let files = filter.filterFile(folderPath,fileNameWanted);
 
 for(var file in files){
   let path = files[file];
-  console.log(path);
-  console.log(yamlExplorer.parseYaml(files[file]));
-  process.exit();
+  console.log(yamlExplorer.parseYaml(path));    
 }
