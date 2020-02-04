@@ -17,8 +17,9 @@
     "sync-request": "^6.1.0"
   },
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "test": "ts-node src/metrics/index.ts ../minio Dockerfile"
+    
+    "start": "node src/crawler.js",
+    "clone": "ts-node src/"
   },
   "repository": {
     "type": "git",
