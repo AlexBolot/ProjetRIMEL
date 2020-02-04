@@ -3,8 +3,8 @@ const neek = require('neek');
 const beep = require('beepbeep');
 // --------------------------------------------------------------------------- //
 
-// 'java', 'C#', 'go'
-const language = 'java';
+// 'java', 'C#', 'go', 'python'
+const language = 'python';
 
 const readable = path.join(__dirname, '..', 'generated', `${language}-output-tmp.txt`);
 const writable = path.join(__dirname, '..', 'generated', `${language}-output.txt`);

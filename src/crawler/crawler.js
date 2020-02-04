@@ -15,10 +15,11 @@ let items;
 const languages = {
     'java': 'java',
     'C#': 'C%23',
-    'go': 'go'
+    'go': 'go',
+    'python': 'python'
 };
 
-const language = 'java';
+const language = 'python';
 const fileName = path.join(__dirname, '..', 'generated', `${language}-output-tmp.txt`);
 
 main();
