@@ -10,10 +10,10 @@ const isFolder = fileName => {
     return lstatSync(fileName).isDirectory();
 }
   
-export function filterFile(folder: string,nameFilter: string,files?: string[]|undefined): string[]{
+export function filterFile(folder: string,nameFilter: string,files?: {}|undefined): string[]{
   
     if (files == undefined || files == null) {
-      files = new Array<string>();
+      files = { paths : [] };
     }
 
     let nodes = readdirSync(folder).filter(f => !f.startsWith("."));
@@ -24,10 +24,9 @@ export function filterFile(folder: string,nameFilter: string,files?: string[]|un
       .map(fileName => { 
         return join(folder, fileName)
     }).filter(isFile);
-    
-    
+        
     if(f_nodes.length>0){
-      files = files.concat(f_nodes);
+      files["paths"] = files["paths"].concat(f_nodes);
     }
 
     // recurce on folder  
@@ -35,6 +34,6 @@ export function filterFile(folder: string,nameFilter: string,files?: string[]|un
       return join(folder, fileName);
     }).filter(isFolder).forEach(d => filterFile(join(d), nameFilter, files));
     
-    return files;
+    return files["paths"];
   
   }

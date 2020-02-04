@@ -3,3 +3,5 @@
 
 **lang/****
 **workspace/**
+src/crawler/clientSecret.js
+src/generated/*-output-tmp.txt

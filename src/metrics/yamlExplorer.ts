@@ -6,7 +6,7 @@ export function parseYaml(path){
         var doc = yaml.safeLoad(fs.readFileSync(path, 'utf8'));
         return doc;
     } catch (e) {
-    console.log(e);
+        console.log(e);
     }
     
 }

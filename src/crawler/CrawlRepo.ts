@@ -1,10 +1,11 @@
 import { readFileSync, existsSync, mkdirSync } from "fs-extra";
 import { EOL } from "os";
 import { cloneSync } from "./Git";
-import { filterFile } from "./metrics/filterFiles";
-import { AstExplorer } from "./metrics/DockerFileAstExplorer";
+import { filterFile } from "../metrics/filterFiles";
+import { AstExplorer } from "../metrics/DockerFileAstExplorer";
 import { writeFileSync } from "fs";
 import { join } from "path";
+import { GlobalMetrics } from "../metrics/model_metrics";
 
 const workspace = "./workspace/"
 const langdir = "./lang/"
@@ -51,15 +52,17 @@ export function crawlRepo(url: string, baseDir: string, securityParts: string[])
     if (! existsSync(workspace+name)) {
         cloneSync(url, workspace+name);
     }
-
+    const globalMetrics = new GlobalMetrics();
     // get all metrics (dockerfile, docker-compose, Readme) -> agregate
     // DockerFile
-    const dockerfileExplorer = new AstExplorer(filterFile(workspace+name, "DOCKERFILE")[0], securityParts);
-    const docker_metrics = dockerfileExplorer.explore();
+    const dockerfileExplorer = new AstExplorer(filterFile(workspace+name, "DOCKERFILE")[0], securityParts, globalMetrics);
+    dockerfileExplorer.explore();
+    // docker-compose 
+    //todo
 
     //TODO agregate
 
     // store agregate
-    console.log(docker_metrics);
-    writeFileSync(join(baseDir,name), JSON.stringify(docker_metrics.toPrintableJson()));
+    console.log(globalMetrics);
+    writeFileSync(join(baseDir,name), JSON.stringify(globalMetrics.toPrintableJson()));
 }
