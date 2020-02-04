@@ -16,8 +16,10 @@ export function parseList(file: string): { lang: string, urls: Array<string>} {
     return { 'lang': lang, 'urls': parts.reverse() };
 }
 
-export function crawlLang(lang: string, urls: Array<string>) {
+export function crawlLang(lang: string, urls: Array<string>, securityfile: String) {
     // if directory lang don't exists create it
+    const securityParts = readFileSync(securityfile).toString().split(EOL)
+
     if (! existsSync(langdir)) {
         mkdirSync(langdir);
     }
@@ -32,11 +34,11 @@ export function crawlLang(lang: string, urls: Array<string>) {
         if (existsSync(r)) {
             //removeSync("lang/"+);
         }
-        crawlRepo(r, langdir+lang);
+        crawlRepo(r, langdir+lang, securityParts);
     });
 }
 
-export function crawlRepo(url: string, baseDir: string) {
+export function crawlRepo(url: string, baseDir: string, securityParts: string[]) {
     console.log("processing "+url);
     const parts  = url.split("/");
     const name = parts[parts.length -1];
@@ -52,11 +54,12 @@ export function crawlRepo(url: string, baseDir: string) {
 
     // get all metrics (dockerfile, docker-compose, Readme) -> agregate
     // DockerFile
-    const dockerfileExplorer = new AstExplorer(filterFile(workspace+name, "DOCKERFILE")[0]);
+    const dockerfileExplorer = new AstExplorer(filterFile(workspace+name, "DOCKERFILE")[0], securityParts);
     const docker_metrics = dockerfileExplorer.explore();
 
     //TODO agregate
 
     // store agregate
+    console.log(docker_metrics);
     writeFileSync(join(baseDir,name), JSON.stringify(docker_metrics.toPrintableJson()));
 }
