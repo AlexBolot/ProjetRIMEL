@@ -4,10 +4,20 @@ export class GlobalMetrics {
     runMetrics: metrics;
     execMetrics: metrics;
 
+    isValid: boolean;
+    whyInvalid: string;
+
+    buildPresent: boolean;
+    execPresent: boolean;
+
+
     constructor() {
         this.buildMetrics = new metrics();
         this.runMetrics = new metrics();
         this.execMetrics= new metrics();
+        this.isValid = false;
+        this.buildPresent = false;
+        this.execPresent = false;
     }
 
     toSting(): string {
@@ -26,6 +36,19 @@ export class GlobalMetrics {
 
         return res
 
+    }
+
+    makeInvalid(why: string) {
+        this.isValid = false;
+        this.whyInvalid = why;
+    }
+
+    makeBuildPresent() {
+        this.buildPresent = true;
+    }
+
+    makeExecPresent() {
+        this.execPresent = true;
     }
 
 }
