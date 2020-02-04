@@ -41,6 +41,7 @@ export class AstExplorer {
         });
         this.stages.push(curInstructions);
         if (stageCounts > 2) throw "too many stage";
+        if (stageCounts == 2) this.metrics.makeBuildPresent();
         return stageCounts;
     }
 
