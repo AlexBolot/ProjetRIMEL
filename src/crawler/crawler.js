@@ -1,28 +1,41 @@
 const fs = require('fs');
 const request = require('request');
 const path = require('path');
+const chalk = require('chalk');
 
+const clientSecret = require('./clientSecret');
 
 // --------------------------------------------------------------------------- //
 
+
 let items;
+
+// languages : java, C%23 (C#),
+
+const languages = {
+    'java': 'java',
+    'C#': 'C%23',
+    'go': 'go',
+    'python': 'python'
+};
+
+const language = 'python';
+const fileName = path.join(__dirname, '..', 'generated', `${language}-output-tmp.txt`);
 
 main();
 
 async function main() {
 
-    let url = 'https://api.github.com/search/repositories?q=language:java&per_page=100';
+    fs.writeFileSync(fileName, `${language}\n`);
 
-    const result = { text: 'Java\n' };
+    let url = `https://api.github.com/search/repositories?q=docker+language:${languages[language]}&sort=stars&order=desc&per_page=100`;
 
-    for (let i = 1; i < 8; i++) {
-        await processPage(url + `&page=${i}`, result);
+    for (let i = 1; i < 10; i++) {
+        await processPage(`${url}&page=${i}&client_id=AlexBolot&client_secret=${clientSecret.secret}`);
     }
-
-    await save('java', result.text);
 }
 
-async function processPage(url, out) {
+async function processPage(url) {
     request(url, { json: true, headers: { 'User-Agent': 'AlexBolot' } }, async (err, res, body) => {
 
         if (body === undefined || body.items === undefined) {
@@ -31,36 +44,49 @@ async function processPage(url, out) {
         }
 
         items = body.items;
-        console.log(`${items.length} - for - ${url}`);
 
         for (let j = 0; j < items.length - 1; j++) {
 
             const smollURL = `https://raw.githubusercontent.com/${getFullName(j)}/master/Dockerfile`;
+            const smollURL2 = `https://raw.githubusercontent.com/${getFullName(j)}/master/docker/Dockerfile`;
+
             request.get(smollURL, { headers: { 'User-Agent': 'AlexBolot' } }, (err, res, body) => {
                 if (body === undefined) {
-                    console.log('body undefined');
-                    console.log(err);
+                    console.log("------");
                     return;
                 }
 
-                if (body.trim() !== '404: Not Found') {
-                    out.text += `${getStars(j)}, https://github.com/${getFullName(j)}\n`;
-                } else console.log(`${getFullName(j)} has no dockerfile`);
+                if (body.trim() === '404: Not Found') {
+                    console.log(chalk.red(`${getFullName(j)} has no dockerfile`));
+                } else {
+                    save(`https://github.com/${getFullName(j)}\n`);
+                    console.log(chalk.blue(`${getFullName(j)}`));
+                }
 
+            });
+
+            request.get(smollURL2, { headers: { 'User-Agent': 'AlexBolot' } }, (err, res, body) => {
+                if (body === undefined) {
+                    console.log("------");
+                    return;
+                }
+
+                if (body.trim() === '404: Not Found') {
+                    console.log(chalk.yellow(`${getFullName(j)} has no dockerfile`));
+                } else {
+                    save(`https://github.com/${getFullName(j)}\n`);
+                    console.log(chalk.blue(`${getFullName(j)}`));
+                }
             });
         }
     });
 
 }
 
-function getStars(index) {
-    return items[index]['stargazers_count'];
-}
-
 function getFullName(index) {
     return items[index]['full_name'];
 }
 
-async function save(language, data) {
-    await fs.writeFileSync(path.join('.', `${language}-output.txt`), data, "UTF-8", { 'flags': 'a+' });
+function save(data) {
+    fs.appendFileSync(fileName, data);
 }
