@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import { DockerfileParser, Dockerfile, Instruction, Arg } from 'dockerfile-ast';
 import { isNull } from 'util';
+import { GlobalMetrics, metrics } from './model_metrics';
 
 export class AstExplorer {
 
@@ -8,15 +9,15 @@ export class AstExplorer {
     dockerfile: Dockerfile;
     currentStage: number;
     stageCount: number;
-
-    metrics: DockerFileMetrics;
+    metrics: GlobalMetrics;
 
     securityparts: string[];
 
-    constructor(file: string, securityparts: string[]) {
+    constructor(file: string, securityparts: string[],globalMetrics : GlobalMetrics) {
         this.stages = new Array();
         this.currentStage = 0;
-        this.metrics = new DockerFileMetrics();
+        this.metrics = globalMetrics;
+        
         this.dockerfile = DockerfileParser.parse(fs.readFileSync(file).toString());
         this.stageCount = this.check();
         this.securityparts = securityparts;
@@ -43,8 +44,8 @@ export class AstExplorer {
         return stageCounts;
     }
 
-    explore(): DockerFileMetrics {
-        let res = new DockerFileMetrics();
+    explore(): GlobalMetrics {
+        let res = this.metrics;
         for (let curstage = 0; curstage < this.stageCount; ++curstage) {
             let stage = this.exploreStage(this.stages[curstage]);
             if (this.stageCount == 2){
@@ -123,62 +124,6 @@ export class AstExplorer {
     }
 }
 
-export class DockerFileMetrics {
-    buildMetrics: metrics;
-    runMetrics: metrics;
-
-    constructor() {
-        this.buildMetrics = new metrics();
-        this.runMetrics = new metrics();
-    }
-
-    toSting(): string {
-        return JSON.stringify(this);
-    }
-
-    toPrintableJson(): any {
-        const build = this.buildMetrics.toPrintableJson();
-        const run = this.runMetrics.toPrintableJson()
-        const res = {
-            buildMetrics: build,
-            runMetrics: run
-        };
-
-        return res
-
-    }
-
-}
-
-export class metrics {
-    expose: number;
-    Args: number;
-    volumes: number;
-    EnvVariables: Set<string>;
-    SecurityVariable: Set<String>;
-    unknown: Set<string>;
-
-    constructor() {
-        this.expose = 0;
-        this.Args = 0;
-        this.volumes = 0;
-        this.EnvVariables = new Set();
-        this.unknown = new Set();
-        this.SecurityVariable = new Set();
-    }
-
-    toPrintableJson() {
-        const res = {};
-        res["expose"]=this.expose;
-        res["args"]=this.Args;
-        res["volumes"]=this.volumes;
-        res["EnvVariable"]=Array.from(this.EnvVariables);
-        res["unknown"]=Array.from(this.unknown);
-        res["SecurityVariable"]=Array.from(this.SecurityVariable);
-
-        return res;
-    }
-}
 
 
 
