@@ -9,6 +9,7 @@
     "fs-extra": "^8.1.0",
     "js-yaml": "^3.13.1",
     "node-fetch": "^2.6.0",
+    "plotly": "^1.0.6",
     "ts-node": "^8.6.2",
     "typescript": "^3.7.5"
   },
