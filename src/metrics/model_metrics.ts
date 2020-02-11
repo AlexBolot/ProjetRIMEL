@@ -15,7 +15,7 @@ export class GlobalMetrics {
         this.buildMetrics = new metrics();
         this.runMetrics = new metrics();
         this.execMetrics= new metrics();
-        this.isValid = false;
+        this.isValid = true;
         this.buildPresent = false;
         this.execPresent = false;
     }
@@ -26,8 +26,8 @@ export class GlobalMetrics {
 
     toPrintableJson(): any {
         const build = this.buildMetrics.toPrintableJson();
-        const run = this.runMetrics.toPrintableJson()
-        const exe = this.execMetrics.toPrintableJson()
+        const run = this.runMetrics.toPrintableJson();
+        const exe = this.execMetrics.toPrintableJson();
         const res = {
             buildMetrics: build,
             runMetrics: run,
