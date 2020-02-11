@@ -7,6 +7,8 @@
     "@types/node": "^13.5.0",
     "dockerfile-ast": "^0.0.18",
     "js-yaml": "^3.13.1",
+    "markdown-ast": "^0.2.1",
+    "md-mdast": "^3.3.0",
     "neek": "^1.1.2",
     "node-fetch": "^2.6.0",
     "plotly": "^1.0.6",
@@ -21,8 +23,7 @@
     "sync-request": "^6.1.0"
   },
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "startPath": "ts-node src/indexPath.ts",
+    "start": "ts-node src/index.ts ",
     "crawl": "node src/crawler/crawler.js && node src/crawler/cleaner.js",
     "clone": "ts-node src/"
   },

@@ -15,7 +15,7 @@ https://github.com/gittea/gittea
 */
 
 const listfile = process.argv[2];
-const securityparts = process.argv[3];
+const securityparts = "./ressources/securityparts";
 if (! listfile || ! securityparts) {
     console.error("file needed")
     process.exit(2);
