@@ -1,11 +1,24 @@
 import * as yaml from 'js-yaml';
-import * as fs from 'fs';
-
-export function parseYaml(path){
+import * as fs   from 'fs';
+import { GlobalMetrics, metrics } from './model_metrics';
+ 
+export function parseYaml(path:string, globalMetrics:GlobalMetrics){
+    let doc = null;
     try {
-        return yaml.safeLoad(fs.readFileSync(path, 'utf8'));
+        doc = yaml.safeLoad(fs.readFileSync(path, 'utf8'));
+        exploreServices(doc['services'], globalMetrics.execMetrics);
+
     } catch (e) {
         console.log(e);
+    }   
+}
+function exploreServices(services, metrics:metrics){
+    for(let ser in services){
+        let port = services[ser].ports;
+        console.log(port);
+        if(port!=undefined){
+            metrics.expose++;
+        }           
+     
     }
-
 }

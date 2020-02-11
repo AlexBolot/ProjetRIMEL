@@ -51,11 +51,11 @@ export class AstExplorer {
             if (this.stageCount == 2){
                 switch (curstage) {
                     case 0:
-                        res.buildMetrics = stage;
+                        res.buildMetrics = stage!=null?stage:res.buildMetrics;
                         break;
 
                     case 1:
-                        res.runMetrics = stage;
+                        res.runMetrics = stage!=null?stage:res.runMetrics;
                         break;
                 }
             }else {

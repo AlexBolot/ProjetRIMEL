@@ -1,4 +1,5 @@
 import { readFileSync, existsSync, mkdirSync } from "fs-extra";
+import * as yamlExplorer from '../metrics/yamlExplorer';
 import { EOL } from "os";
 import { cloneSync } from "./Git";
 import { filterFile } from "../metrics/filterFiles";
@@ -6,6 +7,8 @@ import { AstExplorer } from "../metrics/DockerFileAstExplorer";
 import { writeFileSync } from "fs";
 import { join } from "path";
 import { GlobalMetrics } from "../metrics/model_metrics";
+import { MardownExplorer } from "../metrics/MardownExplorer";
+import { ShellAnalyser } from "../metrics/ShellAnalyser";
 
 const workspace = "./workspace/"
 const langdir = "./lang/"
@@ -54,11 +57,28 @@ export function crawlRepo(url: string, baseDir: string, securityParts: string[])
     }
     const globalMetrics = new GlobalMetrics();
     // get all metrics (dockerfile, docker-compose, Readme) -> agregate
-    // DockerFile
-    const dockerfileExplorer = new AstExplorer(filterFile(workspace+name, "DOCKERFILE")[0], securityParts, globalMetrics);
-    dockerfileExplorer.explore();
-    // docker-compose 
-    //todo
+    // DockerFile -- Analyse build binaire and build image  
+    const dockerfilePath = filterFile(workspace+name, "DOCKERFILE")[0];
+    const dockerfileExplorer = new AstExplorer(dockerfilePath, securityParts, globalMetrics);
+    dockerfileExplorer.explore();  
+
+    //Analyse Exec part 
+    //shellScript
+    const shellPaths = filterFile(workspace+name,".sh");
+    let findExecCommand = false;
+    if(shellPaths!= undefined){
+        const shellAnalyser = new ShellAnalyser(shellPaths,globalMetrics);
+        findExecCommand = shellAnalyser.analyse();
+    }
+
+    //readme
+    if(!findExecCommand){
+        const readMePath = filterFile(workspace+name, "README")[0];
+        if(readMePath!=undefined){
+            const mardownExplorer = new MardownExplorer(readMePath,globalMetrics);
+            mardownExplorer.explorer();
+        }        
+    }
 
     //TODO agregate
 
@@ -66,3 +86,14 @@ export function crawlRepo(url: string, baseDir: string, securityParts: string[])
     console.log(globalMetrics);
     writeFileSync(join(baseDir,name), JSON.stringify(globalMetrics.toPrintableJson()));
 }
+
+
+// docker-compose 
+//todo
+/*const dockerComposeList = filterFile(workspace+name, "docker-compose");
+if(dockerComposeList.length>0){
+    const pathsDockerCompose = filterFile(workspace+name, "docker-compose")[0];
+    yamlExplorer.parseYaml(pathsDockerCompose, globalMetrics);        
+}else{
+    console.log("Docker-compose is missing ! Because everyone don't care about docker-compose lol");
+}*/

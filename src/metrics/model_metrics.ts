@@ -25,9 +25,9 @@ export class GlobalMetrics {
     }
 
     toPrintableJson(): any {
-        const build = this.buildMetrics.toPrintableJson();
-        const run = this.runMetrics.toPrintableJson();
-        const exe = this.execMetrics.toPrintableJson();
+        const build = this.buildMetrics == null ? null : this.buildMetrics.toPrintableJson();
+        const run = this.runMetrics == null ? null : this.runMetrics.toPrintableJson();
+        const exe = this.execMetrics == null ? null : this.execMetrics.toPrintableJson();
         const res = {
             buildMetrics: build,
             runMetrics: run,
