@@ -3,9 +3,7 @@ const request = require('request');
 const path = require('path');
 const chalk = require('chalk');
 
-const sleep = require('./utils').sleep;
 const language = require('./utils').language;
-const clientSecret = require('./clientSecret');
 const save = require('./utils').save;
 
 // --------------------------------------------------------------------------- //
@@ -16,6 +14,7 @@ const selected_repos = path.join(__dirname, '..', 'generated', language, `${lang
 const with_docker_compose = path.join(__dirname, '..', 'generated', language, `${language}-compose.txt`);
 const no_docker_file = path.join(__dirname, '..', 'generated', language, `${language}-no-docker.txt`);
 const request_failed = path.join(__dirname, '..', 'generated', language, `${language}-request-failed.txt`);
+const request_failed_again = path.join(__dirname, '..', 'generated', language, `${language}-request-failed-again.txt`);
 
 const notFound = '404: Not Found';
 
@@ -23,56 +22,35 @@ main();
 
 async function main() {
 
-    fs.writeFileSync(selected_repos, `${language}\n`);
-    fs.writeFileSync(with_docker_compose, '');
-    fs.writeFileSync(no_docker_file, '');
-    fs.writeFileSync(request_failed, '');
+    fs.writeFileSync(request_failed_again, '');
 
-    let url = `https://api.github.com/search/repositories?q=docker+language:${language}&sort=stars&order=desc&per_page=100`;
+    projects = (fs.readFileSync(request_failed) + '').trim().split('\n');
 
-    for (let i = 1; i < 11; i++) {
-        await processPage(i, `${url}&page=${i}&client_id=AlexBolot&client_secret=${clientSecret.secret}`);
-        await sleep(5000);
-        console.log(chalk.green("-- waited 5 sec"));
+    for (const id of projects) {
+        await processRepos(id);
     }
 }
 
-async function processPage(index, url) {
-    console.log(chalk.green(`-- started for page ${index}`));
-    await request(url, { json: true, headers: { 'User-Agent': 'AlexBolot' } }, async (err, res, body) => {
+async function processRepos(projectName) {
 
-        if (body === undefined || body.items === undefined) {
-            console.log(`body or items undefined for page ${index} - ${url}`);
-            return;
-        }
+    console.log(projectName);
 
-        projects = body.items;
+    if (await getDockerCompose(projectName)) {
+        return;
+    }
 
-        for (let projectId = 0; projectId < projects.length - 1; projectId++) {
+    if (await getRootDockerfile(projectName)) {
+        return;
+    }
 
-            if (await getDockerCompose(projectId)) {
-                continue;
-            }
-
-            if (await getRootDockerfile(projectId)) {
-                continue;
-            }
-
-            await getDeepDockerfile(projectId);
-        }
-    });
-}
-
-function getFullName(index) {
-    return projects[index]['full_name'];
+    await getDeepDockerfile(projectName);
 }
 
 // --------------------------------------- //
 // --------------------------------------- //
 // --------------------------------------- //
 
-async function getDockerCompose(projectId) {
-    const projectName = getFullName(projectId);
+async function getDockerCompose(projectName) {
     const url = `https://raw.githubusercontent.com/${projectName}/master/docker-compose.yml`;
 
     await request(url, { headers: { 'User-Agent': 'AlexBolot' } }, (err, res, body) => {
@@ -89,8 +67,7 @@ async function getDockerCompose(projectId) {
     });
 }
 
-async function getRootDockerfile(projectId) {
-    const projectName = getFullName(projectId);
+async function getRootDockerfile(projectName) {
     const url = `https://raw.githubusercontent.com/${projectName}/master/Dockerfile`;
 
     await request(url, { headers: { 'User-Agent': 'AlexBolot' } }, (err, res, body) => {
@@ -109,8 +86,7 @@ async function getRootDockerfile(projectId) {
     });
 }
 
-async function getDeepDockerfile(projectId) {
-    const projectName = getFullName(projectId);
+async function getDeepDockerfile(projectName) {
     const url = `https://raw.githubusercontent.com/${projectName}/master/docker/Dockerfile`;
 
     await request.get(url, { headers: { 'User-Agent': 'AlexBolot' } }, (err, res, body) => {
@@ -127,12 +103,11 @@ async function getDeepDockerfile(projectId) {
 
         saveNoDockerFile(projectName);
         console.log(chalk.red(`${projectName} has no ./docker/Dockerfile`));
-
     });
 }
 
 function saveError(content, lookingFor) {
-    save(request_failed, content + '\n');
+    save(request_failed_again, content + '\n');
     console.log(`--- Error while looking for ${lookingFor} ---`);
 }
 

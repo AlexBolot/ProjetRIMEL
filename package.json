@@ -10,6 +10,7 @@
     "neek": "^1.1.2",
     "node-fetch": "^2.6.0",
     "plotly": "^1.0.6",
+    "sleep": "^6.1.0",
     "ts-node": "^8.6.2",
     "typescript": "^3.7.5"
   },
@@ -22,8 +23,8 @@
   },
   "scripts": {
     "start": "ts-node src/index.ts",
-    "startPath": "ts-node src/ind<exPath.ts",
-    "crawl": "node src/crawler/crawler.js && node src/crawler/cleaner.js",
+    "startPath": "ts-node src/indexPath.ts",
+    "crawl": "node src/crawler/crawler.js && node src/crawler/recrawler.js && node src/crawler/cleaner.js",
     "clone": "ts-node src/"
   },
   "repository": {
