@@ -65,14 +65,19 @@ export function crawlRepo(url: string, baseDir: string, securityParts: string[])
     //Analyse Exec part 
     //shellScript
     const shellPaths = filterFile(workspace+name,".sh");
-    const shellAnalyser = new ShellAnalyser(shellPaths,globalMetrics);
-    const findExecCommand = shellAnalyser.analyse();
+    let findExecCommand = false;
+    if(shellPaths!= undefined){
+        const shellAnalyser = new ShellAnalyser(shellPaths,globalMetrics);
+        findExecCommand = shellAnalyser.analyse();
+    }
 
     //readme
     if(!findExecCommand){
         const readMePath = filterFile(workspace+name, "README")[0];
-        const mardownExplorer = new MardownExplorer(readMePath,globalMetrics);
-        mardownExplorer.explorer();
+        if(readMePath!=undefined){
+            const mardownExplorer = new MardownExplorer(readMePath,globalMetrics);
+            mardownExplorer.explorer();
+        }        
     }
 
     //TODO agregate

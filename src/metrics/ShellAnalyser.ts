@@ -13,7 +13,7 @@ export class ShellAnalyser {
 
     analyse() : boolean{
         for(let f in this.files) {
-            if (this.analyseFile(f)) return true;
+            if (this.analyseFile(this.files[f])) return true;
         }
         return false;
     }

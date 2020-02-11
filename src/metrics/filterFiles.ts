@@ -20,7 +20,7 @@ export function filterFile(folder: string,nameFilter: string,files?: {}|undefine
 
     //get interesting file
     let f_nodes = nodes
-      .filter(f => f.toUpperCase() == nameFilter.toUpperCase())
+      .filter(f => f.toUpperCase().includes(nameFilter.toUpperCase()))
       .map(fileName => { 
         return join(folder, fileName)
     }).filter(isFile);

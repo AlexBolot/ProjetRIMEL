@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import { DockerfileParser, Dockerfile, Instruction, Arg } from 'dockerfile-ast';
-import { isNull } from 'util';
 import { GlobalMetrics, metrics } from './model_metrics';
 
 export class AstExplorer {
@@ -14,18 +13,18 @@ export class AstExplorer {
     securityparts: string[];
 
     constructor(file: string, securityparts: string[],globalMetrics : GlobalMetrics) {
-        this.stages = new Array();
+        this.stages = [];
         this.currentStage = 0;
         this.metrics = globalMetrics;
-        
+
         this.dockerfile = DockerfileParser.parse(fs.readFileSync(file).toString());
         this.stageCount = this.check();
         this.securityparts = securityparts;
     }
 
     check(): number {
-        let stageCounts: number = 0
-        let instructions = this.dockerfile.getInstructions()
+        let stageCounts: number = 0;
+        let instructions = this.dockerfile.getInstructions();
         let curInstructions: Instruction[] = [];
         instructions.forEach(element => {
             if (element.getKeyword() == "FROM") {
@@ -52,18 +51,18 @@ export class AstExplorer {
             if (this.stageCount == 2){
                 switch (curstage) {
                     case 0:
-                        res.buildMetrics = stage;
+                        res.buildMetrics = stage!=null?stage:res.buildMetrics;
                         break;
-    
+
                     case 1:
-                        res.runMetrics = stage;
+                        res.runMetrics = stage!=null?stage:res.runMetrics;
                         break;
                 }
             }else {
                 res.runMetrics = stage;
                 res.buildMetrics = null;
             }
-            
+
         }
         return res;
     }
@@ -72,7 +71,7 @@ export class AstExplorer {
 
     exploreStage(stage: Instruction[]): metrics {
         let res = new metrics();
-        if (stage == null || stage == undefined) return res;
+        if (stage == null) return res;
         stage.forEach(i => {
             switch (i.getKeyword().toUpperCase()) {
                 case "RUN":
@@ -89,7 +88,7 @@ export class AstExplorer {
                     res.expose++;
                     break;
                 case "VOLUME":
-                    res.volumes++
+                    res.volumes++;
                     break;
                 default:
                     res.unknown.add(i.getKeyword().toUpperCase());

@@ -1,6 +1,3 @@
-import * as filter from './metrics/filterFiles';
-import * as yamlExplorer from './metrics/yamlExplorer';
-import * as astExp from './metrics/DockerFileAstExplorer';
 import { crawlLang, parseList } from './crawler/CrawlRepo';
 
 /*
@@ -17,7 +14,7 @@ https://github.com/gittea/gittea
 const listfile = process.argv[2];
 const securityparts = "./ressources/securityparts";
 if (! listfile || ! securityparts) {
-    console.error("file needed")
+    console.error("file needed");
     process.exit(2);
 }
 

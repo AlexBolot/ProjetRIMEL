@@ -12,7 +12,7 @@ export class MardownExplorer{
     }
 
     explorer(){
- 
+        console.log(this.pathToMd);
         const contentFile = fs.readFileSync(this.pathToMd,'utf8');
         const array = contentFile.split("```");        
 

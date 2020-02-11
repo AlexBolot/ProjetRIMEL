@@ -4,7 +4,7 @@
   "description": "node findJS.js {Path} {fileNameWanted}",
   "main": "index.js",
   "dependencies": {
-    "@types/node": "^13.5.0",
+    "@types/node": "^13.7.0",
     "dockerfile-ast": "^0.0.18",
     "js-yaml": "^3.13.1",
     "markdown-ast": "^0.2.1",
@@ -23,7 +23,8 @@
     "sync-request": "^6.1.0"
   },
   "scripts": {
-    "start": "ts-node src/index.ts ",
+    "start": "ts-node src/index.ts",
+    "startPath": "ts-node src/ind<exPath.ts",
     "crawl": "node src/crawler/crawler.js && node src/crawler/cleaner.js",
     "clone": "ts-node src/"
   },
