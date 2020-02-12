@@ -37,8 +37,44 @@ function getColor(language : string) : string {
     console.log("Pie chart generated");
   });
 }*/
+function exposesPerSecVariablesBarPlot(bruteData : languageStats[]) {
+  const xValue = ["all stages", "build", "execution", "run"];
+  var data = [];
+  bruteData.forEach(lang => {
+    var trace = {
+      x: xValue,
+      y: [lang.getExposesPerSecVariableAbsolute(), 
+          lang.getExposesPerSecVariableBuild(),
+          lang.getExposesPerSecVariableExec(),
+          lang.getExposesPerSecVariableRun()],
+      name: lang.getName(),
+      type: 'bar',
+      marker: {
+        color: getColor(lang.getName()),
+      }
+    };   
+    data.push(trace);
+  });
 
-function generateBarPlot(bruteData : languageStats[], stage : string) : void {
+  const layout = {barmode: 'group'};
+  const name = "ExposesPerSecVarRate-bar-chart";
+  const graphBarOptions = { 
+      layoout: layout, 
+      filename: name, 
+      fileopt: "overwrite"};
+  
+  plotly.plot(data, graphBarOptions, function (err, msg) {
+    if (err) {
+      console.log(err);
+    }
+    else {
+      console.log(msg);
+      console.log("Rate plot generated");
+    }
+  });
+};
+
+function languageGroupedByStagesBarPlot(bruteData : languageStats[], stage : string) : void {
   const xValue = ["expose", "args", "volumes", "envVariables","securityVariables"];
   var data = [];
   switch (stage) {
@@ -110,9 +146,8 @@ function generateBarPlot(bruteData : languageStats[], stage : string) : void {
 /**
  * Reading LANG folder, where we'll find different json files
  */
-const langFolder = '../../lang'
+/*const langFolder = '../../lang'
 var allStats = analyzeFolder(langFolder);
-/*
 //---------------------------- MOCKUP JAVA -----------------------------
 var mockupBuild = new stats();
 mockupBuild.add(3,2,0,["TRY"],[],["KEYSEC,SKEY,HASHKEY"]);
@@ -133,7 +168,8 @@ mockupExec.add(0,0.2,3.75,["ENV1", "ENV2"], [], ["SECURITY","SECURE","HASH","KEY
 fullStats = new languageStats('python', mockupBuild, mockupRun, mockupExec);
 allStats.push(fullStats);*/
 
-generateBarPlot(allStats, 'build');
-generateBarPlot(allStats, 'run');
-generateBarPlot(allStats, 'exec');
+languageGroupedByStagesBarPlot(allStats, 'build');
+languageGroupedByStagesBarPlot(allStats, 'run');
+languageGroupedByStagesBarPlot(allStats, 'exec');
+exposesPerSecVariablesBarPlot(allStats);
 
