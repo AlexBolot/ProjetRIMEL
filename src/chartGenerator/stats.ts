@@ -167,8 +167,30 @@ class stats {
       }
     };
 
-    //nb expose/nb variables securite
-    //moyenne par stage (exec, build, run)
-    //moyenne tout par langage
+    public envVariablesAvg() : number {
+      if (this.total > 0) {
+        return this.EnvTuple.length/this.total;
+      }
+      else {
+        console.error("No stats found");
+      }
+    };
+
+    public secVariablesAvg() : number {
+      if (this.total > 0) {
+        return this.securityTuple.length/this.total;
+      }
+      else {
+        console.error("No stats found");
+      }
+    };
+
+    //Stages + langages -> nb expose/nb variables securite 
+    //moyenne par stage (exec, build, run) [un graph par stage barres x = nombre, y = valeur]
+    //Faire un graph par stage et dans ce graph montrer tous les langages (un pour couleur)
+    //moyenne tout par langage (couleur)
+    //GO = bleu
+    //Python = jaune
+    //Java = orange
   }
   

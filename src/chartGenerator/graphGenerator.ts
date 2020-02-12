@@ -1,40 +1,109 @@
-import { throws } from "assert";
 import { stats } from "./stats";
 import { dictionary } from "./dictionary";
+import { languageStats } from "./languageStats";
+import { analyzeFolder } from "./parseDirectory";
+import { stat } from "fs";
 
 const plotly = require('plotly')("elenamv18", "twceWlU4Je0nvMkkqV3O");
 //https://plot.ly/nodejs/line-and-scatter/
-const fs = require('fs');
 
-function appareancesToData(list: dictionary[]) : number[] {
-  var listAppareances = [];
-  list.forEach(variable => {
-    listAppareances.push(variable.getAppareances());
-  });
-  return listAppareances;
-}
+function getColor(language : string) : string {
+  switch (language.toLowerCase()) {
+    case 'go':
+      //blue
+      return "rgba(41, 190, 176, 1)";
+    
+    case 'java':
+      //orange
+      return "rgba(255, 106, 0, 1)";
 
-function nameToLabel(list: dictionary[]) : string[] {
-  var listNames = [];
-  list.forEach(variable => {
-    listNames.push(variable.getName());
-  });
-  return listNames;
-}
-
-function generatePiePlot(inValues : number[], inLabels: string[]) {
-  var data = [{
+    case 'python':
+      //Yellow
+      return "rgba(245, 237, 0, 1)";
+  }
+};
+/*function generatePiePlot(inValues : number[], inLabels: string[]) {
+  const data = [{
     values: inValues,
     labels: inLabels,
     type: 'pie'
   }];
-  var layout = {
+  const layout = {
     height: 400,
     width: 500
   };
-  var graphPieOptions = {layout: layout, filename: "pie-chart", fileopt: "overwrite"};
+  const graphPieOptions = {layout: layout, filename: "pie-chart", fileopt: "overwrite"};
   plotly.plot(data, graphPieOptions, function (err, msg) {
-    console.log(msg);
+    console.log("Pie chart generated");
+  });
+}*/
+
+function generateBarPlot(bruteData : languageStats[], stage : string) : void {
+  const xValue = ["expose", "args", "volumes", "envVariables","securityVariables"];
+  var data = [];
+  switch (stage) {
+    case "build":
+      bruteData.forEach(lang => {
+        var trace = {
+          x: xValue,
+          y: lang.getBuildAvg(),
+          name: lang.getName(),
+          type: 'bar',
+          marker: {
+            color: getColor(lang.getName()),
+          }
+        };   
+        data.push(trace);
+      });
+      break;
+    case "run":
+      bruteData.forEach(lang => {
+        var trace = {
+          x: xValue,
+          y: lang.getRunAvg(),
+          name: lang.getName(),
+          type: 'bar',
+          marker: {
+            color: getColor(lang.getName()),
+          }
+        };   
+        data.push(trace);
+      });
+      break;
+    case "exec":
+      bruteData.forEach(lang => {
+        var trace = {
+          x: xValue,
+          y: lang.getExecAvg(),
+          name: lang.getName(),
+          type: 'bar',
+          marker: {
+            color: getColor(lang.getName()),
+          }
+        };   
+        data.push(trace);
+      });
+      break;
+    default:
+      console.error("NOT VALID STAGE");
+      break;
+  }
+
+  const layout = {barmode: 'group'};
+  const name = stage + "_bar-chart";
+  const graphBarOptions = { 
+      layoout: layout, 
+      filename: name, 
+      fileopt: "overwrite"};
+  
+  plotly.plot(data, graphBarOptions, function (err, msg) {
+    if (err) {
+      console.log(err);
+    }
+    else {
+      console.log(msg);
+      console.log(stage+ " plot generated");
+    }
   });
 }
 
@@ -42,71 +111,29 @@ function generatePiePlot(inValues : number[], inLabels: string[]) {
  * Reading LANG folder, where we'll find different json files
  */
 const langFolder = '../../lang'
-fs.readdir(langFolder, (err, languages) => {
-  //Read lang folder
-  var buildStats = new stats();
-  var runStats = new stats();
-  var execStats = new stats(); 
-  var i = 1; 
-  languages.forEach(lang => {
-    //Read lang/LANGUAGE folder
-    if (err) {
-      throw err;
-    }
-    var langPath = langFolder + "/" + lang;
-    console.log("Current lang: " + lang);
-    
-    fs.readdir(langPath, (err, files) => {
-      //Parse each file in lang/LANGUAGE
-      if (err) {
-        throw err;
-      }
-      files.forEach(file => {
-        //Read the file and add stats in order to create a plot
-        var filePath = langPath + "/" + file;
-        var jsonText = fs.readFileSync(filePath);
-        var contentJSON = JSON.parse(jsonText);
-        var build = contentJSON.buildMetrics;         
-        var run = contentJSON.runMetrics;
-        var exec = contentJSON.execMetrics;
-        buildStats.add(Number(build.expose), Number(build.args), Number(build.volumes),
-                 build.EnvVariable, build.unknown, build.SecurityVariable)
-        runStats.add(Number(run.expose), Number(run.args), Number(run.volumes), 
-                  run.EnvVariable, run.unknown, run.SecurityVariable);
-        execStats.add(Number(exec.expose), Number(exec.args), Number(exec.volumes),
-                  exec.EnvVariable, exec.unknown, exec.SecurityVariable);
-      });// End loop read files
-      //Generating plot
-      generatePiePlot(appareancesToData(buildStats.getEnvTuple()), nameToLabel(buildStats.getEnvTuple()));
-    }); //End read directories
-  });// End loop read folders
-});// End read lang folder
+var allStats = analyzeFolder(langFolder);
+/*
+//---------------------------- MOCKUP JAVA -----------------------------
+var mockupBuild = new stats();
+mockupBuild.add(3,2,0,["TRY"],[],["KEYSEC,SKEY,HASHKEY"]);
+var mockupRun = new stats();
+mockupRun.add(0,8,3,['ENV1',"PATH"],[],["KEYHASH"]);
+var mockupExec = new stats();
+mockupExec.add(4,2,4,["ENV1", "ENV2"], [], ["SECURITY","SECURE","HASH"]);
+var fullStats = new languageStats('java', mockupBuild, mockupRun, mockupExec);
+allStats.push(fullStats);
 
+//---------------------------- MOCKUP PYTHON -----------------------------
+mockupBuild = new stats();
+mockupBuild.add(5,7,3,["TRY","ENV1", "ENV2","PATH"],[],["KEYHASH"]);
+mockupRun = new stats();
+mockupRun.add(1.2,0.3,3,['ENV1',"PATH"],[],["KEYSEC,SKEY,HASHKEY"]);
+mockupExec = new stats();
+mockupExec.add(0,0.2,3.75,["ENV1", "ENV2"], [], ["SECURITY","SECURE","HASH","KEYSEC,SKEY,HASHKEY"]);
+fullStats = new languageStats('python', mockupBuild, mockupRun, mockupExec);
+allStats.push(fullStats);*/
 
-/*var trace1 = {
-    x: [52698, 43117],
-    y: [53, 31],
-    mode: "markers",
-    name: "Average",
-    text: ["United States", "Canada"],
-    marker: {
-      color: "rgb(164, 194, 244)",
-      size: 12,
-      line: {
-        color: "white",
-        width: 0.5
-      }
-    },
-    type: "scatter"
-  };  
-
-var graphLineOptions = {
-  layout: layout,
-  filename: "line-chart",
-  fileopt: "overwrite"
-};
-
-plotly.plot(trace1, graphLineOptions, function (err, msg) {
-  console.log(msg);
-});*/
+generateBarPlot(allStats, 'build');
+generateBarPlot(allStats, 'run');
+generateBarPlot(allStats, 'exec');
 
