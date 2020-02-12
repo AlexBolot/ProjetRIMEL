@@ -10,7 +10,7 @@ const isFolder = fileName => {
     return lstatSync(fileName).isDirectory();
 }
   
-export function filterFile(folder: string,nameFilter: string,files?: {}|undefined): string[]{
+export function filterFile(folder: string,nameFilter: string, recurse:boolean ,files?: {}|undefined): string[]{
   
     if (files == undefined || files == null) {
       files = { paths : [] };
@@ -30,9 +30,11 @@ export function filterFile(folder: string,nameFilter: string,files?: {}|undefine
     }
 
     // recurce on folder  
-    nodes.map(fileName => {
-      return join(folder, fileName);
-    }).filter(isFolder).forEach(d => filterFile(join(d), nameFilter, files));
+    if(recurse){
+      nodes.map(fileName => {
+        return join(folder, fileName);
+      }).filter(isFolder).forEach(d => filterFile(join(d), nameFilter, recurse, files));
+    }
     
     return files["paths"];
   

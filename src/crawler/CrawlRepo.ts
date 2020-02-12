@@ -58,13 +58,13 @@ export function crawlRepo(url: string, baseDir: string, securityParts: string[])
     const globalMetrics = new GlobalMetrics();
     // get all metrics (dockerfile, docker-compose, Readme) -> agregate
     // DockerFile -- Analyse build binaire and build image  
-    const dockerfilePath = filterFile(workspace+name, "DOCKERFILE")[0];
+    const dockerfilePath = filterFile(workspace+name, "DOCKERFILE",true)[0];
     const dockerfileExplorer = new AstExplorer(dockerfilePath, securityParts, globalMetrics);
     dockerfileExplorer.explore();  
 
     //Analyse Exec part 
     //shellScript
-    const shellPaths = filterFile(workspace+name,".sh");
+    const shellPaths = filterFile(workspace+name,".sh",false);
     let findExecCommand = false;
     if(shellPaths!= undefined){
         const shellAnalyser = new ShellAnalyser(shellPaths,globalMetrics);
@@ -73,7 +73,7 @@ export function crawlRepo(url: string, baseDir: string, securityParts: string[])
 
     //readme
     if(!findExecCommand){
-        const readMePath = filterFile(workspace+name, "README")[0];
+        const readMePath = filterFile(workspace+name, "README",false);  
         if(readMePath!=undefined){
             const mardownExplorer = new MardownExplorer(readMePath,globalMetrics);
             mardownExplorer.explorer();

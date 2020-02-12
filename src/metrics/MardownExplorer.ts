@@ -3,26 +3,28 @@ import { analyseLine } from './ShellAnalyser';
 import { GlobalMetrics } from './model_metrics';
 
 export class MardownExplorer{
-    pathToMd:string;
+    pathToMd:string[];
     globalMetrics:GlobalMetrics;
 
-    constructor(path:string, globalMetrics:GlobalMetrics){
+    constructor(path:string[], globalMetrics:GlobalMetrics){
         this.pathToMd=path;
         this.globalMetrics=globalMetrics;
     }
 
     explorer(){
-        console.log(this.pathToMd);
-        const contentFile = fs.readFileSync(this.pathToMd,'utf8');
-        const array = contentFile.split("```");        
-
-        array.forEach((element, index, arr) => {
-            element = element.trim()
-            if(element.includes("docker run")){
-                analyseLine(arr,index,this.globalMetrics);
-            }
-            
+        this.pathToMd.forEach(element => {
+            const contentFile = fs.readFileSync(element,'utf8').trim();            
+            const array = contentFile.split("```"); 
+            this.explorerCommandLine(array);
         });
         
+    }
+    explorerCommandLine(array){
+        array.forEach((element, index, arr) => {
+            if(element.includes("docker")){
+                analyseLine(arr,index,this.globalMetrics);
+                return;
+            }            
+        });
     }
 }

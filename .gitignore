@@ -1,7 +1,7 @@
 /node_modules
 .idea
 
-**lang/****
-**workspace/**
+lang
+workspace
 src/crawler/clientSecret.js
 *-tmp.txt
