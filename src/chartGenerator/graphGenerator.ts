@@ -146,9 +146,10 @@ function languageGroupedByStagesBarPlot(bruteData : languageStats[], stage : str
 /**
  * Reading LANG folder, where we'll find different json files
  */
-/*const langFolder = '../../lang'
+const langFolder = '../../lang'
 var allStats = analyzeFolder(langFolder);
-//---------------------------- MOCKUP JAVA -----------------------------
+
+/*//---------------------------- MOCKUP JAVA -----------------------------
 var mockupBuild = new stats();
 mockupBuild.add(3,2,0,["TRY"],[],["KEYSEC,SKEY,HASHKEY"]);
 var mockupRun = new stats();
