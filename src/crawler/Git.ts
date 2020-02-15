@@ -1,33 +1,24 @@
-import { execSync } from "child_process";
-import { removeSync } from "fs-extra";
-import { existsSync } from "fs";
+import { exec } from "child_process";
+import { remove } from "fs-extra";
 
 export const currentRepo = "./curRepo"
 
-export function cloneSync(url: string, output: string) {
-    const command = "git clone "+url+".git "+output;
-    execSync(command);
+export function clone(url: string, output: string) {
+    const command = "git clone " + url + ".git " + output;
+    return new Promise((resolve, reject) => {
+        exec(command, (err, stdout, stderr) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    })
 }
 
-//export 
-function pullSync(url: string) {
+export async function deleteCurRepo(url: string) {
     const parts = url.split("/");
-    const command = "cd "+parts[parts.length - 1]+" && git pull ";
-    execSync(command);
-}
-
-//export
-function tryCloneOrPull(url: string) {
-    const parts = url.split("/");
-    if (existsSync("./"+parts[parts.length - 1])) {
-        pullSync(url);
-    } else {
-        //cloneSync(url);
-    }
-}
-
-//export 
-function deleteCurRepo(url: string) {
-    const parts = url.split("/");
-    removeSync(parts[parts.length - 1]);
+    await remove("workspace/"+parts[parts.length - 1], (err) => { 
+        console.log(err);
+    });
 }

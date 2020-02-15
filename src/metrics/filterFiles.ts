@@ -1,4 +1,4 @@
-import { readdirSync, lstatSync } from "fs";
+import { readdirSync, lstatSync, readdir } from "fs";
 import { join } from "path";
 
 
@@ -9,14 +9,26 @@ const isFile = fileName => {
 const isFolder = fileName => {
     return lstatSync(fileName).isDirectory();
 }
-  
-export function filterFile(folder: string,nameFilter: string, recurse:boolean ,files?: {}|undefined): string[]{
+
+function readDirAsync(path: string) : Promise<Array<string>>{
+  return new Promise((resolve, reject) => {
+    readdir(path, (err, files) => {
+      if (err) {
+        reject(err);
+      }else {
+        resolve(files);
+      }
+    })
+  });
+}
+
+export async function filterFile(folder: string,nameFilter: string, recurse:boolean ,files?: {}|undefined): Promise<string[]>{
   
     if (files == undefined || files == null) {
       files = { paths : [] };
     }
 
-    let nodes = readdirSync(folder).filter(f => !f.startsWith("."));
+    let nodes = (await readDirAsync(folder)).filter(f => !f.startsWith("."));
 
     //get interesting file
     let f_nodes = nodes
