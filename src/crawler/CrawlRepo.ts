@@ -90,7 +90,11 @@ export async function crawlRepo(url: string, baseDir: string, securityParts: str
     // DockerFile -- Analyse build binaire and build image  
     const dockerfilePath = (await filterFile(workspace + name, "DOCKERFILE", true))[0];
     const dockerfileExplorer = new AstExplorer(dockerfilePath, securityParts, globalMetrics);
-    dockerfileExplorer.explore();
+    try{
+        dockerfileExplorer.explore();
+    }catch (e) {
+        globalMetrics.makeInvalid("invalid dockerfile");
+    }
 
     //Analyse Exec part 
     //shellScript
@@ -99,6 +103,7 @@ export async function crawlRepo(url: string, baseDir: string, securityParts: str
     if (shellPaths != undefined) {
         const shellAnalyser = new ShellAnalyser(shellPaths, globalMetrics);
         findExecCommand = shellAnalyser.analyse();
+        globalMetrics.execSource = "shell";
     }
 
     //readme
@@ -107,13 +112,14 @@ export async function crawlRepo(url: string, baseDir: string, securityParts: str
         if (readMePath != undefined) {
             const mardownExplorer = new MardownExplorer(readMePath, globalMetrics);
             mardownExplorer.explorer();
+            globalMetrics.execSource = "readme";
         }
     }
 
-    //TODO agregate
-
-    // store agregate
+    // store metrics
     console.log(globalMetrics);
     writeFileSync(join(baseDir, name), JSON.stringify(globalMetrics.toPrintableJson()));
+
+    // remove clonned repo
     await deleteCurRepo(url);
 }

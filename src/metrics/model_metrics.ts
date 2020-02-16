@@ -9,6 +9,7 @@ export class GlobalMetrics {
 
     buildPresent: boolean;
     execPresent: boolean;
+    execSource: string;
 
 
     constructor() {
@@ -18,6 +19,7 @@ export class GlobalMetrics {
         this.isValid = true;
         this.buildPresent = false;
         this.execPresent = false;
+        this.execSource = "";
     }
 
     toSting(): string {

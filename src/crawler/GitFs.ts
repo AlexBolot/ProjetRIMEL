@@ -1,5 +1,9 @@
 import { request, RequestOptions, Agent } from "https";
 
+/**
+ * unused
+ */
+
 export class Node {
     private repoOwner: string;
     private repoName: string;
@@ -108,7 +112,7 @@ function executeGetContent(owner: string, repo: string, path: string): Promise<B
         method: 'GET',
         headers: {
             "User-Agent": "rimel",
-            "Authorization": "848be4c0afd520b6a5934f54bd20af8b467a3c34"
+            "Authorization": ""
         }
 };
 
