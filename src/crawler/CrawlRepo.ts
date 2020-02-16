@@ -19,7 +19,7 @@ export function parseList(file: string): { lang: string, urls: Array<string> } {
     return { 'lang': lang, 'urls': parts.reverse() };
 }
 
-export function crawlLang(lang: string, urls: Array<string>, securityfile: String) {
+export async function crawlLang(lang: string, urls: Array<string>, securityfile: String) {
     // if directory lang don't exists create it
     const securityParts = readFileSync(securityfile).toString().split(EOL)
 
@@ -37,12 +37,34 @@ export function crawlLang(lang: string, urls: Array<string>, securityfile: Strin
 
     // for each repo if file exists delete, else crawl
     console.log(urls);
-    urls.forEach(r => {
-        if (existsSync(r)) {
-            //removeSync("lang/"+);
+    let batch = new Array<Promise<any>>();
+    const max_batch = 10;
+
+    while(urls.length > 0) {
+        console.log(urls.length);
+        const batch = new Array<Promise<any>>();
+        for(let cpt = 0; cpt < 10 && urls.length > 0; ++cpt) {
+            const r = urls.pop();
+            batch.push(crawlRepo(r, langdir + lang, securityParts));
         }
-        crawlRepo(r, langdir + lang, securityParts);
+        await Promise.all(batch);
+    }
+    /*
+    urls.forEach(async r => {
+
+        console.log(batch.length);
+        if (batch.length >= max_batch) Promise.all(batch).then((_) => {
+            batch = new Array<Promise<any>>();;
+            batch.push();
+        }).catch(err => {
+            console.error(err);
+            process.exit(3);
+        })
+        else {
+            batch.push(crawlRepo(r, langdir + lang, securityParts));
+        } 
     });
+    */
 }
 
 function existsAsync(path) {
@@ -89,8 +111,8 @@ export async function crawlRepo(url: string, baseDir: string, securityParts: str
     // get all metrics (dockerfile, docker-compose, Readme) -> agregate
     // DockerFile -- Analyse build binaire and build image  
     const dockerfilePath = (await filterFile(workspace + name, "DOCKERFILE", true))[0];
-    const dockerfileExplorer = new AstExplorer(dockerfilePath, securityParts, globalMetrics);
     try{
+        const dockerfileExplorer = new AstExplorer(dockerfilePath, securityParts, globalMetrics);
         dockerfileExplorer.explore();
     }catch (e) {
         globalMetrics.makeInvalid("invalid dockerfile");
@@ -117,9 +139,10 @@ export async function crawlRepo(url: string, baseDir: string, securityParts: str
     }
 
     // store metrics
-    console.log(globalMetrics);
+    //console.log(globalMetrics);
     writeFileSync(join(baseDir, name), JSON.stringify(globalMetrics.toPrintableJson()));
 
     // remove clonned repo
     await deleteCurRepo(url);
+    console.log("end "+url);
 }

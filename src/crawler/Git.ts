@@ -19,6 +19,6 @@ export function clone(url: string, output: string) {
 export async function deleteCurRepo(url: string) {
     const parts = url.split("/");
     await remove("workspace/"+parts[parts.length - 1], (err) => { 
-        console.log(err);
+        //console.log(err);
     });
 }
