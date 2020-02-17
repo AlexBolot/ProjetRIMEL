@@ -4,6 +4,7 @@ import { dictionary } from "./dictionary";
 
 class stats {
     private total: number;
+    private totalNull: number;
     private expose: number;
     private args: number;
     private volumes: number;
@@ -17,6 +18,7 @@ class stats {
     //Constructor
     public constructor() {
       this.total = 0;
+      this.totalNull = 0;
       this.expose = 0;
       this.args = 0;
       this.volumes = 0;
@@ -30,8 +32,8 @@ class stats {
     };
     
     //Geters 
-    public getTotal() : number{
-      return this.total;
+    public getTotalNull() : number{
+      return this.totalNull;
     };
 
     public getExpose(): number {
@@ -139,6 +141,11 @@ class stats {
       this.secToTuple(nSecurityVariable);
     };
     
+    //Add new null
+    public addNull() {
+      this.total++;
+      this.totalNull++;
+    }
     //Calculated stats
     public exposeAvg() : number{
       if (this.total > 0) {
@@ -184,13 +191,5 @@ class stats {
         console.error("No stats found");
       }
     };
-
-    //Stages + langages -> nb expose/nb variables securite 
-    //moyenne par stage (exec, build, run) [un graph par stage barres x = nombre, y = valeur]
-    //Faire un graph par stage et dans ce graph montrer tous les langages (un pour couleur)
-    //moyenne tout par langage (couleur)
-    //GO = bleu
-    //Python = jaune
-    //Java = orange
   }
   

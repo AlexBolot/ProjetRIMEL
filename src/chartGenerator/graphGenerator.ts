@@ -173,4 +173,5 @@ languageGroupedByStagesBarPlot(allStats, 'build');
 languageGroupedByStagesBarPlot(allStats, 'run');
 languageGroupedByStagesBarPlot(allStats, 'exec');
 exposesPerSecVariablesBarPlot(allStats);
+//console.log(allStats);
 

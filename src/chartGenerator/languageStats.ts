@@ -1,18 +1,26 @@
 export { languageStats };
 
 import { stats } from "./stats";
+import { dictionary } from "./dictionary";
 
 class languageStats {
     private name: string;
+    private total: Number;
+    private valid: Number;
     private buildStats: stats;
     private runStats: stats;
     private execStats: stats;
+    private execSourceList : dictionary[];
 
-    constructor (lang: string, nBuild: stats, nRun: stats, nExec: stats){
+    constructor (lang: string, nBuild: stats, nRun: stats, nExec: stats,
+                    nTotal: Number, nValid: Number, nSourceList: dictionary[]){
         this.name = lang;
         this.buildStats = nBuild;
         this.runStats = nRun;
         this.execStats = nExec;
+        this.total = nTotal;
+        this.valid = nValid;
+        this.execSourceList = nSourceList;
         return this;
     };
 
@@ -20,6 +28,18 @@ class languageStats {
         return this.name;
     };
 
+    public getTotal() : Number {
+        return this.total;
+    };
+    
+    public getValid() : Number {
+        return this.valid;
+    };
+
+    public getExecSourceList() : dictionary[] {
+        return this.execSourceList;
+    }
+    
     public getBuildStats() : stats {
         return this.buildStats;
     };
