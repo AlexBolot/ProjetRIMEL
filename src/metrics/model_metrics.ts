@@ -15,7 +15,7 @@ export class GlobalMetrics {
     constructor() {
         this.buildMetrics = new metrics();
         this.runMetrics = new metrics();
-        this.execMetrics= new metrics();
+        this.execMetrics = new metrics();
         this.isValid = true;
         this.buildPresent = false;
         this.execPresent = false;
@@ -33,7 +33,12 @@ export class GlobalMetrics {
         const res = {
             buildMetrics: build,
             runMetrics: run,
-            execMetrics:exe
+            execMetrics: exe,
+            isValid: this.isValid,
+            whyInvalid: this.whyInvalid,
+            buildPresent: this.buildPresent,
+            execPresent: this.execPresent,
+            execSource: this.execSource
         };
 
         return res
@@ -74,12 +79,12 @@ export class metrics {
 
     toPrintableJson() {
         const res = {};
-        res["expose"]=this.expose;
-        res["args"]=this.Args;
-        res["volumes"]=this.volumes;
-        res["EnvVariable"]=Array.from(this.EnvVariables);
-        res["unknown"]=Array.from(this.unknown);
-        res["SecurityVariable"]=Array.from(this.SecurityVariable);
+        res["expose"] = this.expose;
+        res["args"] = this.Args;
+        res["volumes"] = this.volumes;
+        res["EnvVariable"] = Array.from(this.EnvVariables);
+        res["unknown"] = Array.from(this.unknown);
+        res["SecurityVariable"] = Array.from(this.SecurityVariable);
 
         return res;
     }
