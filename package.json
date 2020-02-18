@@ -18,7 +18,9 @@
   },
   "devDependencies": {},
   "scripts": {
+    "start": "ts-node ./src/index.ts",
     "crawl": "node src/crawler/crawler.js && node src/crawler/recrawler.js && node src/crawler/cleaner.js",
+    "graph": "ts-node ./src/chartGenerator/graphGenerator.ts",
     "select": "ts-node src/Query.ts"
   },
   "repository": {

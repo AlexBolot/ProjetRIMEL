@@ -3,6 +3,7 @@ import { dictionary } from "./dictionary";
 import { languageStats } from "./languageStats";
 import { analyzeFolder } from "./parseDirectory";
 import { stat } from "fs";
+import { metrics } from "../metrics/model_metrics";
 
 const plotly = require('plotly')("elenamv18", "twceWlU4Je0nvMkkqV3O");
 //https://plot.ly/nodejs/line-and-scatter/
@@ -166,10 +167,47 @@ function languageGroupedByStagesBarPlot(bruteData : languageStats[], stage : str
   });
 }
 
+function nuagePoint(bruteData : languageStats[],){
+  let listeTrace = [];
+  let i = 0;
+  bruteData.forEach(lang => {
+    let build = lang.getBuildStats();
+    createMarcker(build,listeTrace,i);
+    let run = lang.getRunStats();
+    createMarcker(run,listeTrace,i);
+    let exec = lang.getExecStats();
+    createMarcker(exec,listeTrace,i);   
+  });
+  var layout = {
+    title: 'Nuage de points', 
+    xaxis: {title: 'security'}, 
+    yaxis: {title: 'expose'}
+  };
+  plotly.plot(listeTrace, {layout: layout}, function(err, msg) {
+    console.log(msg.url);
+  });
+}
+function createMarcker(phase :stats,listeTrace : Array<{}>, index : number){
+  phase.metricsList.forEach(project =>{
+   if(project.SecurityVariable.length>0){
+      listeTrace[index] = {
+        mode: 'markers', 
+        type: 'scatter', 
+        x: [project.SecurityVariable.length], 
+        y: [project.expose], 
+        marker: {color: 'rgba(0,330,0,0.8)'}
+      };
+      index++;
+    }
+    
+  });
+}
+
+
 /**
  * Reading LANG folder, where we'll find different json files
  */
-const langFolder = '../../lang'
+const langFolder = './lang'
 var allStats = analyzeFolder(langFolder);
 
 /*//---------------------------- MOCKUP JAVA -----------------------------
@@ -192,9 +230,17 @@ mockupExec.add(0,0.2,3.75,["ENV1", "ENV2"], [], ["SECURITY","SECURE","HASH","KEY
 fullStats = new languageStats('python', mockupBuild, mockupRun, mockupExec);
 allStats.push(fullStats);*/
 
-languageGroupedByStagesBarPlot(allStats, 'build');
-languageGroupedByStagesBarPlot(allStats, 'run');
-languageGroupedByStagesBarPlot(allStats, 'exec');
+nuagePoint(allStats);
+
+//languageGroupedByStagesBarPlot(allStats, 'build');
+//languageGroupedByStagesBarPlot(allStats, 'run');
+//languageGroupedByStagesBarPlot(allStats, 'exec');
 //exposesPerSecVariablesBarPlot(allStats);
 //console.log(allStats);
-
+allStats.forEach(lang => {
+  console.log(lang.getName());
+  console.log("--------------ENV TUPLE----------------");
+  console.log(lang.getGlobalEnvVar());
+  console.log("--------------SEC TUPLE----------------");
+  console.log(lang.getGlobalSecurityVar());
+});
