@@ -1,6 +1,7 @@
 export {stats};
 
 import { dictionary } from "./dictionary";
+import { toUnicode } from "punycode";
 
 class stats {
     private total: number;
@@ -194,24 +195,5 @@ class stats {
         console.error("No stats found");
       }
     };
-
-    public top5Env() : dictionary[] {
-      var top5 : dictionary[];
-      var hasToEnter = false;
-      /*for (var tupleIndex = 0; tupleIndex)
-      this.EnvTuple.forEach( candidate => {
-        top5.forEach(top => {
-          if (candidate.getAppareances() > top.getAppareances()) {
-            
-          }
-        });
-      });*/
-      return top5;
-    }
-
-    public top5Sex() : dictionary[] {
-      var top5 : dictionary[];
-      return top5;
-    }
   }
   

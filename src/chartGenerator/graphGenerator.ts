@@ -192,9 +192,15 @@ mockupExec.add(0,0.2,3.75,["ENV1", "ENV2"], [], ["SECURITY","SECURE","HASH","KEY
 fullStats = new languageStats('python', mockupBuild, mockupRun, mockupExec);
 allStats.push(fullStats);*/
 
-languageGroupedByStagesBarPlot(allStats, 'build');
-languageGroupedByStagesBarPlot(allStats, 'run');
-languageGroupedByStagesBarPlot(allStats, 'exec');
+//languageGroupedByStagesBarPlot(allStats, 'build');
+//languageGroupedByStagesBarPlot(allStats, 'run');
+//languageGroupedByStagesBarPlot(allStats, 'exec');
 //exposesPerSecVariablesBarPlot(allStats);
 //console.log(allStats);
-
+allStats.forEach(lang => {
+  console.log(lang.getName());
+  console.log("--------------ENV TUPLE----------------");
+  console.log(lang.getGlobalEnvVar());
+  console.log("--------------SEC TUPLE----------------");
+  console.log(lang.getGlobalSecurityVar());
+});

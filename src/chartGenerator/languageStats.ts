@@ -16,13 +16,12 @@ class languageStats {
 
     private globalEnvTuple(envTuple: dictionary[]) {
         var found = false;
-        var globalT = [];
         envTuple.forEach(candidate => {
             this.globalEnvVar.forEach(globalVal => {
                 if(candidate.getName() == globalVal.getName()) {
                     //candidate already appeared
                     found = true;
-                    globalVal.addNAppareances(candidate.getAppareances());         
+                    globalVal.addNAppareances(candidate.getAppareances());   
                 }
             })
             if (!found) {
@@ -51,6 +50,19 @@ class languageStats {
         });
     };
 
+    private sortTuple(tuple : dictionary[]) : dictionary[] {
+        for (var i = 0; i < tuple.length; i++) {
+            var aux = tuple[i];
+          for (var j = i+1; j < tuple.length; j++) {
+            if (tuple[j].getAppareances() > tuple[i].getAppareances()) {
+              tuple[i] = tuple[j];
+              tuple[j] = aux;
+            }
+          }
+        }
+        return tuple;
+    }
+
     constructor (lang: string, nBuild: stats, nRun: stats, nExec: stats,
                     nTotal: Number, nValid: Number, nSourceList: dictionary[]){
         this.name = lang;
@@ -66,10 +78,12 @@ class languageStats {
         if (nBuild) this.globalEnvTuple(nBuild.getEnvTuple());
         if (nRun) this.globalEnvTuple(nRun.getEnvTuple());
         if (nExec) this.globalEnvTuple(nExec.getEnvTuple());
+        if (this.globalEnvVar.length > 0) this.globalEnvVar = this.sortTuple(this.globalEnvVar);
         
         if (nBuild) this.globalSecTuple(nBuild.getSecurityTuple());
         if (nRun) this.globalSecTuple(nRun.getSecurityTuple());
         if (nExec) this.globalSecTuple(nExec.getSecurityTuple());
+        if (this.globalSecurityVar.length > 0) this.globalSecurityVar = this.sortTuple(this.globalSecurityVar);
         return this;
     };
 
@@ -196,4 +210,65 @@ class languageStats {
             console.error("No security variables found for " + this.name + " in run stage");
         }
     };
+
+  
+      /*public top5Env() : dictionary[] {
+        var top5 : dictionary[] = [];
+        if (this.globalEnvVar.length > 0) {
+          var TO_COPY = 5;
+          var sustitued = false;
+          //Copy 5 first elements to initialize top5
+          if (this.globalEnvVar.length < 5) TO_COPY=this.globalEnvVar.length;
+          for (var cpyTopIndx = 0; cpyTopIndx < TO_COPY; cpyTopIndx++) {
+            top5[cpyTopIndx] = this.globalEnvVar[cpyTopIndx];
+          }
+          top5 = this.sortTop(top5);
+          //Compare and create the top
+          for (var tupleIndex = TO_COPY; tupleIndex < this.globalEnvVar.length; tupleIndex++) {
+            var candidate = this.globalEnvVar[tupleIndex];
+            //Loop for knowing if some element has less appareances than candidate
+            //and remplace it
+            for (var topIndex = 0; topIndex < top5.length && !sustitued; topIndex++) {
+              if (candidate.getAppareances() > top5[topIndex].getAppareances()){
+                for(var i = TO_COPY-1; i > topIndex; i--) {
+                  top5[i] = top5[i-1];
+                }
+                sustitued = true;
+                top5[topIndex] = candidate;
+              }
+            }
+            sustitued = false;
+          }
+        }
+        return top5;
+      }
+  
+      public top5Sec() : dictionary[] {
+        var top5 : dictionary[] = [];
+        if (this.globalSecurityVar.length > 0) {
+          var TO_COPY = 5;
+          var sustitued = false;
+          //Copy 5 first elements to initialize top5
+          if (this.globalSecurityVar.length < 5) TO_COPY=this.globalSecurityVar.length;
+          for (var cpyTopIndx = 0; cpyTopIndx < TO_COPY; cpyTopIndx++) {
+            top5[cpyTopIndx] = this.globalSecurityVar[cpyTopIndx];
+          }
+          top5 = this.sortTop(top5);
+          //Compare and create the top
+          for (var tupleIndex = 5; tupleIndex < this.globalSecurityVar.length; tupleIndex++) {
+            var candidate = this.globalSecurityVar[tupleIndex];
+            for (var topIndex = 0; topIndex < top5.length && !sustitued; topIndex++) {
+              if (candidate.getAppareances() > top5[topIndex].getAppareances()){
+                for(var i = top5.length-1; i > topIndex; i--) {
+                  top5[i] = top5[i-1];
+                }
+                sustitued = true;
+                top5[topIndex] = candidate;
+              }
+            }
+            sustitued = false;
+          }
+        }
+        return top5;
+      }*/
 };
