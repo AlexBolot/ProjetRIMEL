@@ -189,7 +189,6 @@ function nuagePoint(bruteData : languageStats[],){
 }
 function createMarcker(phase :stats,listeTrace : Array<{}>, index : number){
   phase.metricsList.forEach(project =>{
-   console.log(project.SecurityVariable);
    if(project.SecurityVariable.length>0){
       listeTrace[index] = {
         mode: 'markers', 
