@@ -1,4 +1,3 @@
-
 export class GlobalMetrics {
     buildMetrics: metrics;
     runMetrics: metrics;
@@ -10,7 +9,6 @@ export class GlobalMetrics {
     buildPresent: boolean;
     execPresent: boolean;
     execSource: string;
-
 
     constructor() {
         this.buildMetrics = new metrics();
@@ -30,7 +28,7 @@ export class GlobalMetrics {
         const build = this.buildMetrics == null ? null : this.buildMetrics.toPrintableJson();
         const run = this.runMetrics == null ? null : this.runMetrics.toPrintableJson();
         const exe = this.execMetrics == null ? null : this.execMetrics.toPrintableJson();
-        const res = {
+        return {
             buildMetrics: build,
             runMetrics: run,
             execMetrics: exe,
@@ -39,10 +37,7 @@ export class GlobalMetrics {
             buildPresent: this.buildPresent,
             execPresent: this.execPresent,
             execSource: this.execSource
-        };
-
-        return res
-
+        }
     }
 
     makeInvalid(why: string) {
@@ -62,30 +57,29 @@ export class GlobalMetrics {
 
 export class metrics {
     expose: number;
-    Args: number;
+    args: number;
     volumes: number;
-    EnvVariables: Set<string>;
-    SecurityVariable: Set<String>;
+    envVariables: Set<string>;
+    securityVariable: Set<String>;
     unknown: Set<string>;
 
     constructor() {
         this.expose = 0;
-        this.Args = 0;
+        this.args = 0;
         this.volumes = 0;
-        this.EnvVariables = new Set();
+        this.envVariables = new Set();
         this.unknown = new Set();
-        this.SecurityVariable = new Set();
+        this.securityVariable = new Set();
     }
 
     toPrintableJson() {
-        const res = {};
-        res["expose"] = this.expose;
-        res["args"] = this.Args;
-        res["volumes"] = this.volumes;
-        res["EnvVariable"] = Array.from(this.EnvVariables);
-        res["unknown"] = Array.from(this.unknown);
-        res["SecurityVariable"] = Array.from(this.SecurityVariable);
-
-        return res;
+        return {
+            expose : this.expose,
+            args : this.args,
+            volumes: this.volumes,
+            EnvVariables : Array.from(this.envVariables),
+            unknown : this.unknown,
+            SecurityVariable : Array.from(this.securityVariable)
+        };
     }
 }

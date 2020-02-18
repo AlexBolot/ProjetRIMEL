@@ -1,6 +1,5 @@
 const path = require('path');
 const neek = require('neek');
-const beep = require('beepbeep');
 const language = require('./utils').language;
 // --------------------------------------------------------------------------- //
 
@@ -9,6 +8,5 @@ const writable = path.join(__dirname, '..', 'generated', language, `${language}-
 
 neek.unique(readable, writable, function (result) {
     console.log(result);
-    beep(2);
 });
 
