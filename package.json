@@ -24,10 +24,7 @@
     "sync-request": "^6.1.0"
   },
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "startPath": "ts-node src/indexPath.ts",
-    "crawl": "node src/crawler/crawler.js && node src/crawler/recrawler.js && node src/crawler/cleaner.js",
-    "clone": "ts-node src/"
+    "crawl": "node src/crawler/crawler.js && node src/crawler/recrawler.js && node src/crawler/cleaner.js"
   },
   "repository": {
     "type": "git",
