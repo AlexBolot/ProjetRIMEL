@@ -6,13 +6,8 @@
   "dependencies": {
     "@types/node": "^13.7.0",
     "dockerfile-ast": "^0.0.18",
-    "js-yaml": "^3.13.1",
-    "markdown-ast": "^0.2.1",
-    "md-mdast": "^3.3.0",
     "neek": "^1.1.2",
-    "node-fetch": "^2.6.0",
     "plotly": "^1.0.6",
-    "sleep": "^6.1.0",
     "ts-node": "^8.6.2",
     "typescript": "^3.7.5"
   },
@@ -24,7 +19,9 @@
     "sync-request": "^6.1.0"
   },
   "scripts": {
-    "crawl": "node src/crawler/crawler.js && node src/crawler/recrawler.js && node src/crawler/cleaner.js"
+    "start": "ts-node ./src/index.ts",
+    "crawl": "node src/crawler/crawler.js && node src/crawler/recrawler.js && node src/crawler/cleaner.js",
+    "graph": "ts-node ./src/chartGenerator/graphGenerator.ts"
   },
   "repository": {
     "type": "git",
