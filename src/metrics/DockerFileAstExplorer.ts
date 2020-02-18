@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import { DockerfileParser, Dockerfile, Instruction, Arg } from 'dockerfile-ast';
-import { GlobalMetrics, metrics } from './model_metrics';
+import {Dockerfile, DockerfileParser, Instruction} from 'dockerfile-ast';
+import {GlobalMetrics, metrics} from './model_metrics';
 
 export class AstExplorer {
 
@@ -12,7 +12,7 @@ export class AstExplorer {
 
     securityparts: string[];
 
-    constructor(file: string, securityparts: string[],globalMetrics : GlobalMetrics) {
+    constructor(file: string, securityparts: string[], globalMetrics: GlobalMetrics) {
         this.stages = [];
         this.currentStage = 0;
         this.metrics = globalMetrics;
@@ -24,23 +24,22 @@ export class AstExplorer {
 
     check(): number {
         let stageCounts: number = 0;
-        let instructions = this.dockerfile.getInstructions();
+        const instructions = this.dockerfile.getInstructions();
         let curInstructions: Instruction[] = [];
         instructions.forEach(element => {
-            if (element.getKeyword() == "FROM") {
+            if (element.getKeyword() === 'FROM') {
                 ++stageCounts;
                 if (curInstructions.length != 0) {
                     this.stages.push(curInstructions);
                     curInstructions = [];
                 }
-            }
-            else {
+            } else {
                 curInstructions.push(element);
             }
         });
         this.stages.push(curInstructions);
-        if (stageCounts > 2) throw "too many stage";
-        if (stageCounts == 2) this.metrics.makeBuildPresent();
+        if (stageCounts > 2) throw 'too many stage';
+        if (stageCounts === 2) this.metrics.makeBuildPresent();
         return stageCounts;
     }
 
@@ -48,46 +47,44 @@ export class AstExplorer {
         let res = this.metrics;
         for (let curstage = 0; curstage < this.stageCount; ++curstage) {
             let stage = this.exploreStage(this.stages[curstage]);
-            if (this.stageCount == 2){
+            if (this.stageCount == 2) {
                 switch (curstage) {
                     case 0:
-                        res.buildMetrics = stage!=null?stage:res.buildMetrics;
+                        res.buildMetrics = stage != null ? stage : res.buildMetrics;
                         break;
 
                     case 1:
-                        res.runMetrics = stage!=null?stage:res.runMetrics;
+                        res.runMetrics = stage != null ? stage : res.runMetrics;
                         break;
                 }
-            }else {
+            } else {
                 res.runMetrics = stage;
                 res.buildMetrics = null;
             }
-
         }
         return res;
     }
 
 
-
     exploreStage(stage: Instruction[]): metrics {
-        let res = new metrics();
+        const res = new metrics();
         if (stage == null) return res;
         stage.forEach(i => {
             switch (i.getKeyword().toUpperCase()) {
-                case "RUN":
-                    this.exploreRUN(i.getArgumentsContent()).forEach(e => res.EnvVariables.add(e));
+                case 'RUN':
+                    this.exploreRUN(i.getArgumentsContent()).forEach(e => res.envVariables.add(e));
                     break;
-                case "ENV":
-                    this.exploreENV(i.getArgumentsContent()).forEach(e => res.EnvVariables.add(e));
+                case 'ENV':
+                    this.exploreENV(i.getArgumentsContent()).forEach(e => res.envVariables.add(e));
                     break;
-                case "ARG":
-                    res.Args++;
+                case 'ARG':
+                    res.args++;
                     break;
 
-                case "EXPOSE":
+                case 'EXPOSE':
                     res.expose++;
                     break;
-                case "VOLUME":
+                case 'VOLUME':
                     res.volumes++;
                     break;
                 default:
@@ -97,34 +94,32 @@ export class AstExplorer {
         });
 
         //security variables
-        Array.from(res.EnvVariables).filter(v => {
+        Array.from(res.envVariables).filter(v => {
             let predicate = false;
             this.securityparts.forEach(p => {
-                if (v.toUpperCase().includes(p.toUpperCase())) predicate = true;
+                if (v.toUpperCase().includes(p.toUpperCase())) {
+                    predicate = true;
+                }
             });
             return predicate;
-        }).forEach(v => res.SecurityVariable.add(v));
+        }).forEach(v => res.securityVariable.add(v));
 
         return res;
     }
 
     exploreENV(cmd: string): Array<string> {
         let res = new Array<string>();
-        if (cmd.includes("=")) {
-            cmd.split(" ").forEach(e => res.push(e.split("=")[0]));
-        }else {
-            res.push(cmd.split(" ")[0]);
+        if (cmd.includes('=')) {
+            cmd.split(' ').forEach(e => res.push(e.split('=')[0]));
+        } else {
+            res.push(cmd.split(' ')[0]);
         }
         return res.filter(e => e.length > 0);
     }
 
     exploreRUN(cmd: string): Array<string> {
         let res = cmd.match(/\$([A-Z_]+[A-Z0-9_]*)|\${([A-Z0-9_]*)}/ig);
-        return res != null ? res : [];
+        return res !== null ? res : [];
     }
 }
-
-
-
-
 

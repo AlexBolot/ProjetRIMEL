@@ -1,49 +1,49 @@
-import { readFileSync, existsSync, mkdirSync } from "fs-extra";
-import { EOL } from "os";
-import { clone, deleteCurRepo } from "./Git";
-import { filterFile } from "../metrics/filterFiles";
-import { AstExplorer } from "../metrics/DockerFileAstExplorer";
-import { writeFileSync, exists, readFile } from "fs";
-import { join } from "path";
-import { GlobalMetrics } from "../metrics/model_metrics";
-import { MardownExplorer } from "../metrics/MardownExplorer";
-import { ShellAnalyser } from "../metrics/ShellAnalyser";
+import {existsSync, mkdirSync, readFileSync} from 'fs-extra';
+import {EOL} from 'os';
+import {clone, deleteCurRepo} from './Git';
+import {filterFile} from '../metrics/filterFiles';
+import {AstExplorer} from '../metrics/DockerFileAstExplorer';
+import {exists, readFile, writeFileSync} from 'fs';
+import {join} from 'path';
+import {GlobalMetrics} from '../metrics/model_metrics';
+import {MardownExplorer} from '../metrics/MardownExplorer';
+import {ShellAnalyser} from '../metrics/ShellAnalyser';
 
-const workspace = "./workspace/"
-const langdir = "./lang/"
+const workspace = './workspace/';
+const langdir = './lang/';
 
 export function parseList(file: string): { lang: string, urls: Array<string> } {
-    let parts: string[] = readFileSync(file).toString().split(EOL);
+    const parts: string[] = readFileSync(file).toString().split(EOL);
     parts.reverse();
-    const lang = parts.pop();
-    return { 'lang': lang, 'urls': parts.reverse() };
+    return {
+        lang: parts.pop(),
+        urls: parts.reverse()
+    };
 }
 
 export async function crawlLang(lang: string, urls: Array<string>, securityfile: String) {
     // if directory lang don't exists create it
-    const securityParts = readFileSync(securityfile).toString().split(EOL)
+    const securityParts = readFileSync(securityfile).toString().split(EOL);
 
     if (!existsSync(langdir)) {
         mkdirSync(langdir);
     }
 
-    if (!existsSync(langdir + lang)) {
-        mkdirSync(langdir + lang);
+    if (!existsSync(join(langdir, lang))) {
+        mkdirSync(join(langdir, lang));
     }
 
-    if (! existsSync(workspace)) {
+    if (!existsSync(workspace)) {
         mkdirSync(workspace);
     }
 
     // for each repo if file exists delete, else crawl
     console.log(urls);
-    let batch = new Array<Promise<any>>();
-    const max_batch = 10;
 
-    while(urls.length > 0) {
+    while (urls.length > 0) {
         console.log(urls.length);
         const batch = new Array<Promise<any>>();
-        for(let cpt = 0; cpt < 10 && urls.length > 0; ++cpt) {
+        for (let cpt = 0; cpt < 10 && urls.length > 0; ++cpt) {
             const r = urls.pop();
             batch.push(crawlRepo(r, langdir + lang, securityParts));
         }
@@ -62,63 +62,57 @@ export async function crawlLang(lang: string, urls: Array<string>, securityfile:
         })
         else {
             batch.push(crawlRepo(r, langdir + lang, securityParts));
-        } 
+        }
     });
     */
 }
 
 function existsAsync(path) {
-    return new Promise((resolve, reject) => {
-        exists(path, function (exists) {
-            resolve(exists);
-        })
-    })
+    return new Promise((resolve) => {
+        exists(path, (result) => {
+            resolve(result);
+        });
+    });
 }
 
 function readAsync(path) {
     return new Promise((resolve, reject) => {
         readFile(path, (err, data) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(data);
-            }
+            if (err) reject(err);
+            resolve(data);
         })
     })
 }
 
 export async function crawlRepo(url: string, baseDir: string, securityParts: string[]) {
-    console.log("processing " + url);
-    const parts = url.split("/");
+    console.log('processing ' + url);
+    const parts = url.split('/');
     const name = parts[parts.length - 1];
-    const owner = parts[parts.length - 2];
 
-    //const repo: Node = await getRooOfRepo(owner, name);
-    //console.log(JSON.stringify(repo));
-
-
-
-    if (await existsAsync(join(baseDir, name))) { return; }
-
-    // clone repo or pull last version
-    if (!await existsAsync(workspace + name)) {
-        await clone(url, workspace + name);
-    } else {
+    if (await existsAsync(join(baseDir, name))) {
         return;
     }
-    
+
+    if (await existsAsync(join(workspace, name))) {
+        return;
+    }
+
+    // clone repo or pull last version
+    await clone(url, workspace + name);
+
+
     const globalMetrics = new GlobalMetrics();
     // get all metrics (dockerfile, docker-compose, Readme) -> agregate
-    // DockerFile -- Analyse build binaire and build image  
+    // DockerFile -- Analyse build binaire and build image
     const dockerfilePath = (await filterFile(workspace + name, "DOCKERFILE", true))[0];
-    try{
+    try {
         const dockerfileExplorer = new AstExplorer(dockerfilePath, securityParts, globalMetrics);
         dockerfileExplorer.explore();
-    }catch (e) {
+    } catch (e) {
         globalMetrics.makeInvalid("invalid dockerfile");
     }
 
-    //Analyse Exec part 
+    //Analyse Exec part
     //shellScript
     const shellPaths = await filterFile(workspace + name, ".sh", false);
     let findExecCommand = false;
@@ -144,5 +138,5 @@ export async function crawlRepo(url: string, baseDir: string, securityParts: str
 
     // remove clonned repo
     await deleteCurRepo(url);
-    console.log("end "+url);
+    console.log("end " + url);
 }
