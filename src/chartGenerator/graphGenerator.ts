@@ -56,10 +56,22 @@ function exposesPerSecVariablesBarPlot(bruteData : languageStats[]) {
     data.push(trace);
   });
 
-  const layout = {barmode: 'group'};
   const name = "ExposesPerSecVarRate-bar-chart";
+  const layout = {
+    title: {
+      text: name,
+      font: {
+        family: 'Courier New, monospace',
+        size: 24
+      },
+      xref: 'paper',
+      x: 0.05,
+    },
+    barmode: 'group'
+  };
   const graphBarOptions = { 
-      layoout: layout, 
+      title: name,
+      layout: layout, 
       filename: name, 
       fileopt: "overwrite"};
   
@@ -125,10 +137,21 @@ function languageGroupedByStagesBarPlot(bruteData : languageStats[], stage : str
       break;
   }
 
-  const layout = {barmode: 'group'};
+  
   const name = stage + "_bar-chart";
+  const layout = {
+    title: {
+      text: name,
+      font: {
+        family: 'Courier New, monospace',
+        size: 24
+      },
+      xref: 'paper',
+      x: 0.05,
+    },
+    barmode: 'group'};
   const graphBarOptions = { 
-      layoout: layout, 
+      layout: layout, 
       filename: name, 
       fileopt: "overwrite"};
   
@@ -172,6 +195,6 @@ allStats.push(fullStats);*/
 languageGroupedByStagesBarPlot(allStats, 'build');
 languageGroupedByStagesBarPlot(allStats, 'run');
 languageGroupedByStagesBarPlot(allStats, 'exec');
-exposesPerSecVariablesBarPlot(allStats);
+//exposesPerSecVariablesBarPlot(allStats);
 //console.log(allStats);
 

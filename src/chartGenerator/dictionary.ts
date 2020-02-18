@@ -21,6 +21,10 @@ class dictionary {
         this.appareances++;
     }
 
+    public addNAppareances(addNAppareances: number){
+        this.appareances += addNAppareances;
+    }
+
     public toString() :  string{
         return "[" + this.name.toString() + ", " + this.appareances.toString() + "]";
     }

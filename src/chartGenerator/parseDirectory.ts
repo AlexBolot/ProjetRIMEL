@@ -8,20 +8,20 @@ const fs = require('fs');
 
 var allStats = []; //Language stats list in order to print chart at the end
 
-function addExecSource(candidate : string, execSourceList : dictionary[]) {
+function addExecSource(candidate : string, execSourceList : dictionary[]) : dictionary[] {
   var found = false;
   execSourceList.forEach(source => {
     if(candidate == source.getName()) {
       //candidate already appeared
       found = true;
       source.addAppareance();         
-    };
-    if (!found) {
-      //Add name to tuple
-      execSourceList.push(new dictionary(candidate));
-    };
-    found = false; //Restart
+    }
   });
+  if (!found) {
+    //Add name to tuple
+    execSourceList.push(new dictionary(candidate));
+  };
+  return execSourceList;
 };
 
 //We use synchrone directories and file reading in order to guarantee a sequential execution
@@ -75,7 +75,7 @@ function analyzeFolder(path: string) : languageStats[] {
         else {
           execStats.addNull();
         }
-        addExecSource(contentJSON.execSource, execSourceDict);
+        execSourceDict = addExecSource(contentJSON.execSource, execSourceDict);
   
       }
     });

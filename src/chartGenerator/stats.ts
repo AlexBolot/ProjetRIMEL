@@ -4,7 +4,7 @@ import { dictionary } from "./dictionary";
 
 class stats {
     private total: number;
-    private totalNull: number;
+    private totalNotNull: number;
     private expose: number;
     private args: number;
     private volumes: number;
@@ -18,7 +18,7 @@ class stats {
     //Constructor
     public constructor() {
       this.total = 0;
-      this.totalNull = 0;
+      this.totalNotNull = 0;
       this.expose = 0;
       this.args = 0;
       this.volumes = 0;
@@ -32,8 +32,8 @@ class stats {
     };
     
     //Geters 
-    public getTotalNull() : number{
-      return this.totalNull;
+    public getTotalNotNull() : number{
+      return this.totalNotNull;
     };
 
     public getExpose(): number {
@@ -72,6 +72,9 @@ class stats {
       return this.securityTuple;
     };
 
+    public getTotal() : number {
+      return this.total;
+    }
     private envToTuple(env: string[]){
       var found = false;
       env.forEach(name => {
@@ -130,6 +133,7 @@ class stats {
     public add(nExp: number, nArgs: number, nVolumes: number, 
           nEnvVariable: string[], nUnknown: string[], nSecurityVariable: string[]) {
       this.total++;
+      this.totalNotNull++;
       this.expose+=nExp;
       this.args+=nArgs;
       this.volumes+=nVolumes;
@@ -144,12 +148,11 @@ class stats {
     //Add new null
     public addNull() {
       this.total++;
-      this.totalNull++;
     }
     //Calculated stats
     public exposeAvg() : number{
-      if (this.total > 0) {
-        return this.expose/this.total;
+      if (this.totalNotNull > 0) {
+        return this.expose/this.totalNotNull;
       }
       else {
         console.error("No stats found");
@@ -157,8 +160,8 @@ class stats {
     };
     
     public argsAvg() : number{
-      if (this.total > 0) {
-        return this.args/this.total;
+      if (this.totalNotNull > 0) {
+        return this.args/this.totalNotNull;
       }
       else {
         console.error("No stats found");
@@ -166,8 +169,8 @@ class stats {
     };
   
     public volumesAvg() : number{
-      if (this.total > 0) {
-        return this.volumes/this.total;
+      if (this.totalNotNull > 0) {
+        return this.volumes/this.totalNotNull;
       }
       else {
         console.error("No stats found");
@@ -175,8 +178,8 @@ class stats {
     };
 
     public envVariablesAvg() : number {
-      if (this.total > 0) {
-        return this.EnvTuple.length/this.total;
+      if (this.totalNotNull > 0) {
+        return this.EnvTuple.length/this.totalNotNull;
       }
       else {
         console.error("No stats found");
@@ -184,12 +187,31 @@ class stats {
     };
 
     public secVariablesAvg() : number {
-      if (this.total > 0) {
-        return this.securityTuple.length/this.total;
+      if (this.totalNotNull > 0) {
+        return this.securityTuple.length/this.totalNotNull;
       }
       else {
         console.error("No stats found");
       }
     };
+
+    public top5Env() : dictionary[] {
+      var top5 : dictionary[];
+      var hasToEnter = false;
+      /*for (var tupleIndex = 0; tupleIndex)
+      this.EnvTuple.forEach( candidate => {
+        top5.forEach(top => {
+          if (candidate.getAppareances() > top.getAppareances()) {
+            
+          }
+        });
+      });*/
+      return top5;
+    }
+
+    public top5Sex() : dictionary[] {
+      var top5 : dictionary[];
+      return top5;
+    }
   }
   

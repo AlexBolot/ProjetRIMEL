@@ -11,6 +11,45 @@ class languageStats {
     private runStats: stats;
     private execStats: stats;
     private execSourceList : dictionary[];
+    private globalEnvVar : dictionary[];
+    private globalSecurityVar : dictionary[];
+
+    private globalEnvTuple(envTuple: dictionary[]) {
+        var found = false;
+        var globalT = [];
+        envTuple.forEach(candidate => {
+            this.globalEnvVar.forEach(globalVal => {
+                if(candidate.getName() == globalVal.getName()) {
+                    //candidate already appeared
+                    found = true;
+                    globalVal.addNAppareances(candidate.getAppareances());         
+                }
+            })
+            if (!found) {
+                //Add name to tuple
+                this.globalEnvVar.push(new dictionary(candidate.getName()));
+            };
+            found = false;    
+        });
+    };
+
+    private globalSecTuple(secTuple: dictionary[]) {
+        var found = false;
+        secTuple.forEach(candidate => {
+            this.globalSecurityVar.forEach(globalVal => {
+                if(candidate.getName() == globalVal.getName()) {
+                    //candidate already appeared
+                    found = true;
+                    globalVal.addNAppareances(candidate.getAppareances());         
+                }
+            })
+            if (!found) {
+                //Add name to tuple
+                this.globalSecurityVar.push(new dictionary(candidate.getName()));
+            };
+            found = false;    
+        });
+    };
 
     constructor (lang: string, nBuild: stats, nRun: stats, nExec: stats,
                     nTotal: Number, nValid: Number, nSourceList: dictionary[]){
@@ -21,6 +60,16 @@ class languageStats {
         this.total = nTotal;
         this.valid = nValid;
         this.execSourceList = nSourceList;
+        this.globalEnvVar = [];
+        this.globalSecurityVar = [];
+        
+        if (nBuild) this.globalEnvTuple(nBuild.getEnvTuple());
+        if (nRun) this.globalEnvTuple(nRun.getEnvTuple());
+        if (nExec) this.globalEnvTuple(nExec.getEnvTuple());
+        
+        if (nBuild) this.globalSecTuple(nBuild.getSecurityTuple());
+        if (nRun) this.globalSecTuple(nRun.getSecurityTuple());
+        if (nExec) this.globalSecTuple(nExec.getSecurityTuple());
         return this;
     };
 
@@ -50,6 +99,14 @@ class languageStats {
 
     public getExecStats() : stats {
         return this.execStats;
+    };
+
+    public getGlobalEnvVar() : dictionary[] {
+        return this.globalEnvVar;
+    };
+
+    public getGlobalSecurityVar() : dictionary[] {
+        return this.globalSecurityVar;
     };
 
     public getBuildAvg() : number[] {
