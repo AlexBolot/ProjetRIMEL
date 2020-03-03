@@ -23,21 +23,7 @@ function getColor(language : string) : string {
       return "rgba(245, 237, 0, 1)";
   }
 };
-/*function generatePiePlot(inValues : number[], inLabels: string[]) {
-  const data = [{
-    values: inValues,
-    labels: inLabels,
-    type: 'pie'
-  }];
-  const layout = {
-    height: 400,
-    width: 500
-  };
-  const graphPieOptions = {layout: layout, filename: "pie-chart", fileopt: "overwrite"};
-  plotly.plot(data, graphPieOptions, function (err, msg) {
-    console.log("Pie chart generated");
-  });
-}*/
+
 function exposesPerSecVariablesBarPlot(bruteData : languageStats[]) {
   const xValue = ["all stages", "build", "execution", "run"];
   var data = [];
@@ -81,8 +67,8 @@ function exposesPerSecVariablesBarPlot(bruteData : languageStats[]) {
       console.log(err);
     }
     else {
-      console.log(msg);
-      console.log("Rate plot generated");
+      console.log("* Rate plot generated: ");
+      console.log(msg.url + "\n");
     }
   });
 };
@@ -161,8 +147,8 @@ function languageGroupedByStagesBarPlot(bruteData : languageStats[], stage : str
       console.log(err);
     }
     else {
-      console.log(msg);
-      console.log(stage+ " plot generated");
+      console.log("* " + stage + " plot generated:");
+      console.log(msg.url + "\n");
     }
   });
 }
@@ -183,8 +169,9 @@ function nuagePoint(bruteData : languageStats[],){
     xaxis: {title: 'security'}, 
     yaxis: {title: 'expose'}
   };
-  plotly.plot(listeTrace, {layout: layout}, function(err, msg) {
-    console.log(msg.url);
+  plotly.plot(listeTrace, {layout: layout, fileopt : "overwrite"}, function(err, msg) {
+    console.log("* Nuage points generated: ")
+    console.log(msg.url + "\n");
   });
 }
 function createMarcker(phase :stats,listeTrace : Array<{}>, index : number){
@@ -230,17 +217,27 @@ mockupExec.add(0,0.2,3.75,["ENV1", "ENV2"], [], ["SECURITY","SECURE","HASH","KEY
 fullStats = new languageStats('python', mockupBuild, mockupRun, mockupExec);
 allStats.push(fullStats);*/
 
-nuagePoint(allStats);
-
-//languageGroupedByStagesBarPlot(allStats, 'build');
-//languageGroupedByStagesBarPlot(allStats, 'run');
-//languageGroupedByStagesBarPlot(allStats, 'exec');
-//exposesPerSecVariablesBarPlot(allStats);
 //console.log(allStats);
+var totalAbsolut:any = 0;
+let totalValid:any = 0;
 allStats.forEach(lang => {
-  console.log(lang.getName());
-  console.log("--------------ENV TUPLE----------------");
+  console.log("********** " + lang.getName() + " **********");
+  console.log("- Total analysé = " + lang.getTotal());
+  console.log("- Total valids = " + lang.getValid());
+  console.log("--------------ENV TUPLE AVEC APPARITIONS----------------");
   console.log(lang.getGlobalEnvVar());
-  console.log("--------------SEC TUPLE----------------");
+  console.log("--------------SEC TUPLE AVEC APPARITIONS----------------");
   console.log(lang.getGlobalSecurityVar());
+  console.log("****************************************\n\n");
+  totalAbsolut = totalAbsolut + lang.getTotal();
+  totalValid = totalValid + lang.getValid();
 });
+console.log("Total projects analyzed = " + totalAbsolut);
+console.log("Where valid = " + totalValid + "\n\n");
+
+//--PLOT CREATION--
+nuagePoint(allStats);
+languageGroupedByStagesBarPlot(allStats, 'build');
+languageGroupedByStagesBarPlot(allStats, 'run');
+languageGroupedByStagesBarPlot(allStats, 'exec');
+exposesPerSecVariablesBarPlot(allStats);
