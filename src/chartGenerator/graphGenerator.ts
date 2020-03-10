@@ -154,15 +154,20 @@ function languageGroupedByStagesBarPlot(bruteData : languageStats[], stage : str
 }
 
 function nuagePoint(bruteData : languageStats[],){
+  const colorBuild : String = "rgba(245, 25, 25, 1)";
+  const colorExec : String = "rgba(245, 131, 25, 1)";
+  const colorRun : String = "rgba(40, 245, 25, 1)";
+  
+  
   let listeTrace = [];
   let i = 0;
   bruteData.forEach(lang => {
     let build = lang.getBuildStats();
-    createMarcker(build,listeTrace,i);
+    createMarcker(build,listeTrace,i, getColor(lang.getName()), "build", lang.getName());
     let run = lang.getRunStats();
-    createMarcker(run,listeTrace,i);
+    createMarcker(run,listeTrace,i, getColor(lang.getName()), "run", lang.getName());
     let exec = lang.getExecStats();
-    createMarcker(exec,listeTrace,i);   
+    createMarcker(exec,listeTrace,i, getColor(lang.getName()), "exec", lang.getName());   
   });
   var layout = {
     title: 'Nuage de points', 
@@ -174,7 +179,8 @@ function nuagePoint(bruteData : languageStats[],){
     console.log(msg.url + "\n");
   });
 }
-function createMarcker(phase :stats,listeTrace : Array<{}>, index : number){
+function createMarcker(phase : stats, listeTrace : Array<{}>, index : number, phaseColor : String,
+                        phaseName : String, phaseLang : String){
   phase.metricsList.forEach(project =>{
    if(project.SecurityVariable.length>0){
       listeTrace[index] = {
@@ -182,7 +188,8 @@ function createMarcker(phase :stats,listeTrace : Array<{}>, index : number){
         type: 'scatter', 
         x: [project.SecurityVariable.length], 
         y: [project.expose], 
-        marker: {color: 'rgba(0,330,0,0.8)'}
+        name : phaseLang + "_" + phaseName,
+        marker: {color: phaseColor}
       };
       index++;
     }
